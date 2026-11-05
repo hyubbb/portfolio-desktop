@@ -66,7 +66,7 @@ export function PageIcon() {
   );
 }
 
-export type ProjectGlyph = "chat" | "cup" | "grid";
+export type ProjectGlyph = "chat" | "cup" | "grid" | "stream" | "pdf" | "upload" | "engine";
 
 function Glyph({ glyph, color }: { glyph: ProjectGlyph; color: string }) {
   if (glyph === "chat")
@@ -78,6 +78,39 @@ function Glyph({ glyph, color }: { glyph: ProjectGlyph; color: string }) {
         <path d="M27 30h10" stroke={color} strokeWidth="2" />
       </>
     );
+  if (glyph === "stream")
+    return (
+      <g fill="#fff">
+        <rect x="22" y="29" width="5" height="10" rx="1.5" />
+        <rect x="29" y="29" width="5" height="10" rx="1.5" opacity=".75" />
+        <rect x="36" y="29" width="5" height="10" rx="1.5" opacity=".5" />
+        <path d="M43 30l4 4-4 4" stroke="#fff" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+      </g>
+    );
+  if (glyph === "pdf")
+    return (
+      <g>
+        <path d="M26 24h9l5 5v13a1.5 1.5 0 0 1-1.5 1.5h-12.5a1.5 1.5 0 0 1-1.5-1.5v-16.5a1.5 1.5 0 0 1 1.5-1.5z" fill="#fff" />
+        <rect x="27" y="33" width="11" height="2" rx="1" fill={color} />
+        <rect x="27" y="37" width="8" height="2" rx="1" fill={color} opacity=".6" />
+      </g>
+    );
+  if (glyph === "upload")
+    return (
+      <g stroke="#fff" strokeWidth="2.6" fill="none" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M32 41V27M26 32l6-6 6 6" />
+        <path d="M24 43h16" />
+      </g>
+    );
+  if (glyph === "engine")
+    return (
+      <g fill="#fff">
+        <rect x="22" y="25" width="7" height="7" rx="2" />
+        <rect x="35" y="25" width="7" height="7" rx="2" opacity=".7" />
+        <rect x="28.5" y="36" width="7" height="7" rx="2" />
+        <path d="M29 28.5h6M25.5 32l4 4M38.5 32l-4 4" stroke="#fff" strokeWidth="1.6" />
+      </g>
+    );
   const cells = [0, 1, 2].flatMap((r) => [0, 1, 2].map((c) => ({ r, c })));
   return (
     <g fill="#fff">
@@ -88,13 +121,13 @@ function Glyph({ glyph, color }: { glyph: ProjectGlyph; color: string }) {
   );
 }
 
-export function ProjectIcon({ color, glyph }: { color: string; glyph: ProjectGlyph }) {
+export function ProjectIcon({ color, glyph, tag = "WEB" }: { color: string; glyph: ProjectGlyph; tag?: string }) {
   return (
     <svg viewBox="0 0 64 56" aria-hidden="true">
       {PAPER}
       <rect x="18" y="20" width="28" height="26" rx="6" fill={color} />
       <Glyph glyph={glyph} color={color} />
-      <text x="31" y="15" textAnchor="middle" fontFamily="monospace" fontSize="6" fontWeight="700" fill="#8d92a0">WEB</text>
+      <text x="31" y="15" textAnchor="middle" fontFamily="monospace" fontSize="6" fontWeight="700" fill="#8d92a0">{tag}</text>
     </svg>
   );
 }

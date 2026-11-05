@@ -26,7 +26,7 @@ export function FolderView({ folder }: { folder: DesktopItem }) {
             item={item}
             tone="window"
             selected={selected === item.id}
-            caption={item.kind === "project" ? localize(item.description) : undefined}
+            caption={(item.kind === "project" || item.kind === "page") && item.description ? localize(item.description) : undefined}
             onClick={(e) => {
               e.stopPropagation();
               setSelected(item.id);

@@ -15,7 +15,7 @@ export type DesktopItem =
   | (ItemBase & { kind: "readme" })
   | (ItemBase & { kind: "github"; user: string })
   /** 이 사이트 안의 정적 페이지 (public/ 아래) */
-  | (ItemBase & { kind: "page"; src: string })
+  | (ItemBase & { kind: "page"; src: string; description?: Localized; color?: string; glyph?: ProjectGlyph })
   | (ItemBase & { kind: "folder" })
   /** 따로 배포된 프로젝트 사이트 */
   | (ItemBase & { kind: "project"; url: string; color: string; glyph: ProjectGlyph; description: Localized });

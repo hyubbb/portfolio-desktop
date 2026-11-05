@@ -9,7 +9,7 @@ export function ItemIcon({ item }: { item: DesktopItem }) {
     case "folder":
       return <FolderIcon />;
     case "page":
-      return <PageIcon />;
+      return item.color && item.glyph ? <ProjectIcon color={item.color} glyph={item.glyph} tag="HTML" /> : <PageIcon />;
     case "github":
       return <GitIcon />;
     case "readme":

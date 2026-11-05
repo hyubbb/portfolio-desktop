@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF 부분 로딩</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<link rel="stylesheet" href="case.css">
+<style>
+/* 같은 시계로 두 방식이 파일을 받는 모습: 위는 진행률, 아래는 PDF 페이지가 보이기 시작하는 순간 */
+.meter{display:flex;justify-content:space-between;font:12.5px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums;gap:8px;flex-wrap:wrap}
+.meter b{color:var(--ink)}
+.pages{display:grid;grid-template-columns:repeat(8,1fr);gap:6px}
+.page{aspect-ratio:3/4;max-width:100%;border-radius:4px;background:var(--track);border:1px solid var(--line);position:relative;overflow:hidden;transition:background .25s}
+.page::after{content:"";position:absolute;left:18%;right:18%;top:22%;height:42%;background:repeating-linear-gradient(var(--line) 0 2px,transparent 2px 6px);opacity:0;transition:opacity .25s}
+.page.shown{background:var(--surface)}
+.page.shown::after{opacity:1}
+.page.shown.after{border-color:var(--after)}
+.page.shown.before{border-color:var(--before)}
+.page.view{box-shadow:0 0 0 2px var(--ok)}
+.first{font:600 13px var(--f-body);display:flex;align-items:center;gap:6px;min-height:22px}
+.first .tag{font-size:12px}
+@media (max-width:520px){.pages{grid-template-columns:repeat(6,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="eyebrow" data-i="eyebrow"></div>
+    <h1 data-i="h1"></h1>
+    <p class="lede" data-i-html="lede"></p>
+  </header>
+
+  <section class="results">
+    <div class="result"><span class="label" data-i="r1Label"></span><span class="value"><span class="from" data-i="r1From"></span><span class="arrow">→</span><span class="to" data-i="r1To"></span></span></div>
+    <div class="result"><span class="label" data-i="r2Label"></span><span class="value"><span class="from" data-i="r2From"></span><span class="arrow">→</span><span class="to" data-i="r2To"></span></span></div>
+    <div class="result"><span class="label" data-i="r3Label"></span><span class="value"><span class="from" data-i="r3From"></span><span class="arrow">→</span><span class="to" data-i="r3To"></span></span></div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <h2 data-i="simTitle"></h2>
+      <div class="controls">
+        <button class="primary" id="play" type="button" data-i="replay"></button>
+        <span class="clock" id="clock">0s</span>
+      </div>
+    </div>
+    <div class="sides">
+      <div class="side">
+        <div class="side-head"><b data-i="before"></b><span class="tag before" data-i="beforeHow"></span></div>
+        <div class="bar before"><i id="b-bar"></i></div>
+        <div class="meter"><span id="b-bytes"></span><span id="b-req"></span></div>
+        <div class="pages" id="b-pages"></div>
+        <div class="first" id="b-first"></div>
+        <ol class="log" id="b-log"></ol>
+      </div>
+      <div class="side">
+        <div class="side-head"><b data-i="after"></b><span class="tag after" data-i="afterHow"></span></div>
+        <div class="bar"><i id="a-bar"></i></div>
+        <div class="meter"><span id="a-bytes"></span><span id="a-req"></span></div>
+        <div class="pages" id="a-pages"></div>
+        <div class="first" id="a-first"></div>
+        <ol class="log" id="a-log"></ol>
+      </div>
+    </div>
+    <p class="note" data-i="simNote"></p>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:12px">
+    <h2 data-i="changesTitle"></h2>
+    <div class="changes">
+      <div class="change"><h3 data-i="c1t"></h3><p data-i-html="c1"></p></div>
+      <div class="change"><h3 data-i="c2t"></h3><p data-i-html="c2"></p></div>
+      <div class="change"><h3 data-i="c3t"></h3><p data-i-html="c3"></p></div>
+      <div class="change"><h3 data-i="c4t"></h3><p data-i-html="c4"></p></div>
+    </div>
+  </section>
+  <p class="note" data-i="note"></p>
+</div>
+
+<script src="case.js"></script>
+<script>
+(function () {
+  var t = Case.init({
+    ko: {
+      title: "PDF 부분 로딩",
+      eyebrow: "PDF.js · HTTP Range Request",
+      h1: "교재 PDF, 첫 화면까지 50초에서 6초로",
+      lede: "수백 MB짜리 교재 PDF를 통째로 내려받은 뒤에야 첫 페이지가 보였습니다. 휴대폰에서는 메모리가 부족해 멈추기도 했고, \"PDF가 안 열린다\"는 문의가 매주 들어왔습니다.<br class=\"wide-br\"> 스토리지가 이미 Range 요청을 지원한다는 걸 확인하고, PDF.js가 지금 보는 페이지에 필요한 조각만 받아 오도록 바꿨습니다.",
+      r1Label: "첫 페이지가 보이기까지", r1From: "약 50초", r1To: "6~7초",
+      r2Label: "PDF 로딩 관련 문의", r2From: "주 3건", r2To: "0건",
+      r3Label: "처음에 받는 양", r3From: "파일 전체", r3To: "보는 페이지만",
+      simTitle: "같은 PDF를 여는 두 방식", replay: "다시 재생",
+      before: "도입 전", after: "도입 후",
+      beforeHow: "전체 다운로드 → blob URL", afterHow: "URL 전달 → Range 요청",
+      received: "받은 양 {v}", requests: "요청 {n}회",
+      firstAt: "첫 페이지 표시: {s}초", waiting: "첫 페이지 기다리는 중…",
+      lFetch: "GET 전체 파일 (200 OK)", lBuffer: "arrayBuffer() → Blob → objectURL", lRender: "PDF.js에 blob URL 전달 → 렌더링",
+      lHead: "GET 첫 요청 200 → Accept-Ranges: bytes 확인", lRange: "Range bytes={a}-{b} → 206", lFirst: "1~2쪽 렌더링", lScroll: "사용자가 {p}쪽으로 넘김 → 필요한 조각만 추가 요청",
+      simNote: "시간은 10배 빠르게 돌렸습니다. 첫 페이지까지 걸린 시간(약 50초 → 6~7초)은 실제 측정값이고, 파일 크기(200MB)와 조각 수는 설명을 위한 예시입니다.",
+      changesTitle: "무엇을 바꿨나",
+      c1t: "다운로드 대신 URL을 그대로 전달", c1: "<code>fetch → arrayBuffer → Blob</code>으로 파일 전체를 메모리에 올리던 코드를 지우고, CDN URL을 PDF.js에 바로 넘겼습니다. PDF.js가 <code>Range: bytes=…</code> 헤더로 64KB씩 필요한 부분만 요청하고 서버는 <code>206 Partial Content</code>로 답합니다.",
+      c2t: "서명된 URL 만료 대응", c2: "부분 요청은 페이지를 넘길 때마다 다시 일어나서, 오래 열어 두면 서명된 URL이 만료될 수 있습니다. 로드 실패(<code>onError</code>)를 받으면 교재 정보를 다시 불러 새 URL로 자동으로 다시 엽니다.",
+      c3t: "다른 출처 파일 허용", c3: "PDF.js 뷰어는 뷰어와 다른 출처의 파일을 막는 검사(<code>validateFileURL</code>)가 있어 스토리지 URL이 차단됐습니다. 자체 호스팅 환경에서는 불필요한 검사라 비활성화하고, 버전을 올릴 때 다시 적용해야 한다는 점을 문서에 남겼습니다.",
+      c4t: "캡처·썸네일까지 정리", c4: "다른 출처에서 그린 캔버스는 이미지로 저장할 수 없어서(tainted canvas), 캡처 기능을 켤 때만 백그라운드로 파일을 받아 같은 출처로 바꿉니다. 썸네일도 URL 모드로 바꿔 필요한 페이지만 읽습니다.",
+      note: "사내 문서와 코드를 바탕으로 정리했습니다. 서비스 이름과 내부 주소는 넣지 않았습니다."
+    },
+    ja: {
+      title: "PDF の部分読み込み",
+      eyebrow: "PDF.js · HTTP Range Request",
+      h1: "教材 PDF、最初の画面まで 50 秒から 6 秒へ",
+      lede: "数百 MB の教材 PDF を丸ごとダウンロードしてから、ようやく 1 ページ目が表示されていました。スマートフォンではメモリ不足で止まることもあり、「PDF が開かない」という問い合わせが毎週届いていました。<br class=\"wide-br\">ストレージがすでに Range リクエストに対応していることを確認し、PDF.js が今見ているページに必要な断片だけを取得するように変えました。",
+      r1Label: "1 ページ目が表示されるまで", r1From: "約 50 秒", r1To: "6〜7 秒",
+      r2Label: "PDF 読み込みの問い合わせ", r2From: "週 3 件", r2To: "0 件",
+      r3Label: "最初に受け取る量", r3From: "ファイル全体", r3To: "見るページだけ",
+      simTitle: "同じ PDF を開く 2 つの方法", replay: "もう一度再生",
+      before: "導入前", after: "導入後",
+      beforeHow: "全体ダウンロード → blob URL", afterHow: "URL を渡す → Range リクエスト",
+      received: "受信量 {v}", requests: "リクエスト {n} 回",
+      firstAt: "1 ページ目を表示: {s} 秒", waiting: "1 ページ目を待機中…",
+      lFetch: "GET ファイル全体 (200 OK)", lBuffer: "arrayBuffer() → Blob → objectURL", lRender: "PDF.js に blob URL を渡す → 描画",
+      lHead: "GET 最初のリクエスト 200 → Accept-Ranges: bytes を確認", lRange: "Range bytes={a}-{b} → 206", lFirst: "1〜2 ページを描画", lScroll: "ユーザーが {p} ページへ移動 → 必要な断片だけ追加取得",
+      simNote: "時間は 10 倍速にしています。1 ページ目までの時間(約 50 秒 → 6〜7 秒)は実測値で、ファイルサイズ(200MB)と断片の数は説明用の例です。",
+      changesTitle: "何を変えたか",
+      c1t: "ダウンロードせず URL をそのまま渡す", c1: "<code>fetch → arrayBuffer → Blob</code> でファイル全体をメモリに載せていたコードを削除し、CDN の URL を PDF.js に直接渡しました。PDF.js が <code>Range: bytes=…</code> ヘッダーで 64KB ずつ必要な部分だけを要求し、サーバーは <code>206 Partial Content</code> で応答します。",
+      c2t: "署名付き URL の期限切れ対策", c2: "部分リクエストはページを移動するたびに発生するため、長く開いていると署名付き URL が期限切れになることがあります。読み込み失敗(<code>onError</code>)を受け取ったら教材情報を取り直し、新しい URL で自動的に開き直します。",
+      c3t: "別オリジンのファイルを許可", c3: "PDF.js のビューアには、ビューアと異なるオリジンのファイルを拒否するチェック(<code>validateFileURL</code>)があり、ストレージの URL がブロックされていました。セルフホスト環境では不要なため無効にし、バージョンアップ時に再適用が必要なことをドキュメントに残しました。",
+      c4t: "キャプチャ・サムネイルも整理", c4: "別オリジンから描いたキャンバスは画像として保存できない(tainted canvas)ため、キャプチャ機能をオンにしたときだけバックグラウンドでファイルを取得し、同一オリジンに切り替えます。サムネイルも URL モードにして必要なページだけを読みます。",
+      note: "社内ドキュメントとコードをもとに整理しました。サービス名と内部アドレスは載せていません。"
+    }
+  });
+
+  var $ = function (id) { return document.getElementById(id); };
+  var SPEED = 10;          // 화면의 1초 = 실제 10초
+  var TOTAL_MB = 200;      // 예시 파일 크기
+  var PAGES = 16;
+  var BEFORE_DONE = 50;    // 실제: 약 50초
+  var AFTER_FIRST = 6.5;   // 실제: 6~7초
+  var END = 58;
+  var KB = 64;
+
+  function grid(id, cls) {
+    var el = $(id);
+    el.textContent = "";
+    var cells = [];
+    for (var i = 0; i < PAGES; i++) { var c = document.createElement("div"); c.className = "page"; c.dataset.side = cls; el.appendChild(c); cells.push(c); }
+    return cells;
+  }
+  function mb(v) { return v >= 1 ? v.toFixed(1) + " MB" : Math.round(v * 1024) + " KB"; }
+
+  // 도입 후: 시간(초)별 이벤트
+  var afterEvents = [
+    { at: 0.3, log: "lHead", req: 1, kb: 0 },
+    { at: 1.2, range: 0 }, { at: 2.4, range: 1 }, { at: 3.6, range: 2 }, { at: 4.8, range: 3 }, { at: 5.8, range: 40 },
+    { at: AFTER_FIRST, first: true, pages: [0, 1] },
+    { at: 22, scroll: 5, pages: [] }, { at: 23, range: 61 }, { at: 24, range: 62 }, { at: 25, pages: [4, 5] },
+    { at: 40, scroll: 11, pages: [] }, { at: 41, range: 130 }, { at: 42, range: 131 }, { at: 43, pages: [10, 11] }
+  ];
+
+  var bCells, aCells, idx, start, raf, aState, bState;
+
+  function reset() {
+    cancelAnimationFrame(raf);
+    bCells = grid("b-pages", "before");
+    aCells = grid("a-pages", "after");
+    ["b", "a"].forEach(function (k) { $(k + "-log").textContent = ""; $(k + "-bar").style.width = "0%"; $(k + "-first").textContent = t("waiting"); });
+    aState = { kb: 0, req: 0 };
+    bState = { logged: 0 };
+    idx = 0;
+    meters(0);
+  }
+  function meters(T) {
+    var bMb = Math.min(TOTAL_MB, (TOTAL_MB * T) / BEFORE_DONE);
+    $("b-bytes").textContent = t("received", { v: mb(bMb) });
+    $("b-req").textContent = t("requests", { n: 1 });
+    $("b-bar").style.width = Math.min(100, (T / BEFORE_DONE) * 100) + "%";
+    $("a-bytes").textContent = t("received", { v: mb(aState.kb / 1024) });
+    $("a-req").textContent = t("requests", { n: aState.req });
+    $("a-bar").style.width = Math.min(100, ((aState.kb / 1024) / TOTAL_MB) * 100) + "%";
+    $("clock").textContent = Math.floor(T) + "s";
+  }
+  function stamp(T) { return (T.toFixed(1) + "s").padStart(5, " "); }
+
+  function step(T) {
+    // 도입 전
+    if (bState.logged === 0 && T >= 0.2) { Case.log($("b-log"), stamp(0.2), t("lFetch")); bState.logged = 1; }
+    if (bState.logged === 1 && T >= BEFORE_DONE) {
+      Case.log($("b-log"), stamp(BEFORE_DONE), t("lBuffer"));
+      Case.log($("b-log"), stamp(BEFORE_DONE), t("lRender"), "info");
+      bCells.forEach(function (c, i) { c.classList.add("shown", "before"); if (i === 0) c.classList.add("view"); });
+      $("b-first").innerHTML = '<span class="tag before">' + t("firstAt", { s: BEFORE_DONE }) + "</span>";
+      bState.logged = 2;
+    }
+    // 도입 후
+    while (idx < afterEvents.length && afterEvents[idx].at <= T) {
+      var ev = afterEvents[idx++], ts = stamp(ev.at);
+      if (ev.log) { aState.req += ev.req; Case.log($("a-log"), ts, t(ev.log)); }
+      if (ev.range != null) {
+        aState.req += 1; aState.kb += KB;
+        var a = ev.range * KB * 1024, b = a + KB * 1024 - 1;
+        Case.log($("a-log"), ts, t("lRange", { a: a, b: b }));
+      }
+      if (ev.scroll) Case.log($("a-log"), ts, t("lScroll", { p: ev.scroll }), "info");
+      if (ev.pages) ev.pages.forEach(function (p) { aCells[p].classList.add("shown", "after"); });
+      if (ev.first) {
+        aCells[0].classList.add("view");
+        Case.log($("a-log"), ts, t("lFirst"), "good");
+        $("a-first").innerHTML = '<span class="tag after">' + t("firstAt", { s: AFTER_FIRST }) + "</span>";
+      }
+    }
+    meters(T);
+  }
+  function frame(now) {
+    var T = Math.min(END, ((now - start) / 1000) * SPEED);
+    step(T);
+    if (T < END) raf = requestAnimationFrame(frame);
+  }
+  function play() {
+    reset();
+    if (Case.reduceMotion) { step(END); return; }
+    start = performance.now();
+    raf = requestAnimationFrame(frame);
+  }
+  $("play").addEventListener("click", play);
+  play();
+})();
+</script>
+</body>
+</html>
