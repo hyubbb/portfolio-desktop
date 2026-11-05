@@ -46,6 +46,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 @media (max-width:640px){.menubar .m{display:none}}
 
 .icons{position:fixed;top:calc(env(safe-area-inset-top,0px) + 44px);right:max(18px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px;align-items:center;z-index:2}
+a.icon,.dock a.lnk{text-decoration:none}
 .icon{width:92px;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;padding:6px 4px;border-radius:8px;cursor:default;color:var(--icon-label);font:500 12px var(--f-ui)}
 .icon svg{width:64px;height:56px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.25))}
 .icon span{padding:1px 6px;border-radius:4px;text-shadow:0 1px 3px rgba(0,0,0,.6);line-height:1.35;text-align:center}
@@ -88,6 +89,10 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 .dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:40;display:flex;align-items:flex-end;gap:8px;
   padding:7px 9px;border-radius:20px;background:var(--dock);border:1px solid var(--dock-line);backdrop-filter:blur(26px) saturate(1.5);-webkit-backdrop-filter:blur(26px) saturate(1.5);max-width:calc(100vw - 24px)}
+.dock a.lnk{position:relative;display:block;width:54px;height:54px;transition:transform .18s cubic-bezier(.2,.8,.2,1);transform-origin:50% 100%}
+.dock a.lnk:hover{transform:scale(1.22) translateY(-4px)}
+.dock a.lnk:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:12px}
+.dock a.lnk:hover .tip{opacity:1}
 .dock button{position:relative;width:54px;height:54px;border:0;padding:0;background:none;cursor:pointer;transition:transform .18s cubic-bezier(.2,.8,.2,1);transform-origin:50% 100%}
 .dock button:hover{transform:scale(1.22) translateY(-4px)}
 .dock button:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:12px}
@@ -123,6 +128,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 (function(){
   /* 새 자료는 여기 한 줄씩 추가 */
   var ITEMS=[
+    {id:"github",name:"GitHub",kind:"link",href:"https://github.com/hyubbb"},
     {id:"about",name:"README",kind:"doc",title:"README — 이창협",w:520,h:420},
     {id:"fastlane",name:"fastlane",kind:"page",title:"fastlane — 셸 스크립트 배포와 fastlane 배포",src:"projects/fastlane.html",w:1180,h:780}
   ];
@@ -173,6 +179,10 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   /* ── 데스크톱 아이콘 ── */
   var iconsEl=document.getElementById("icons");
   ITEMS.slice().reverse().forEach(function(it){
+    if(it.kind==="link"){
+      var a=document.createElement("a");a.className="icon";a.id="icon-"+it.id;a.href=it.href;a.target="_blank";a.rel="noopener";
+      a.innerHTML=gitSVG(64)+"<span>"+it.name+"</span>";iconsEl.appendChild(a);return;
+    }
     var b=document.createElement("button");b.type="button";b.className="icon";b.id="icon-"+it.id;
     b.innerHTML=iconFor(it)+"<span>"+it.name+"</span>";
     b.addEventListener("click",function(e){e.stopPropagation();select(b);if(matchMedia("(hover: none)").matches)open(it.id)});
@@ -190,7 +200,12 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
     b.innerHTML=dockSVG(kind)+'<span class="dot"></span><span class="tip">'+label+'</span>';
     b.addEventListener("click",fn);dock.appendChild(b);dockBtns[key]=b;
   }
-  ITEMS.forEach(function(it){addDock(it.id,it.name,it.kind==="page"?"fastlane":"doc",function(){open(it.id)})});
+  ITEMS.forEach(function(it){
+    if(it.kind==="link"){var a=document.createElement("a");a.className="lnk";a.href=it.href;a.target="_blank";a.rel="noopener";a.setAttribute("aria-label",it.name+" 열기");
+      a.innerHTML=gitSVG(54)+'<span class="tip">'+it.name+'</span>';dock.appendChild(a);return;}
+    addDock(it.id,it.name,it.kind==="page"?"fastlane":"doc",function(){open(it.id)})});
+  function gitSVG(s){var h=s===64?56:54,ox=s===64?7:2,oy=s===64?3:2;
+    return '<svg viewBox="0 0 '+s+' '+h+'"><g transform="translate('+ox+' '+oy+')"><rect width="50" height="50" rx="12" fill="#24292f"/><g stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"><path d="M17 12v26"/><path d="M33 18c0 9-16 7-16 16"/></g><g fill="#24292f" stroke="#fff" stroke-width="3"><circle cx="17" cy="12" r="4"/><circle cx="17" cy="38" r="4"/><circle cx="33" cy="15" r="4"/></g></g></svg>'}
   var sep=document.createElement("span");sep.className="sep";dock.appendChild(sep);
   addDock("trash","휴지통","trash",function(){});
 
