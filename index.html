@@ -63,10 +63,10 @@ a.icon,.dock a.lnk{text-decoration:none}
 .titlebar{height:28px;flex:none;display:flex;align-items:center;gap:10px;padding:0 10px;background:var(--win-bar);border-bottom:1px solid var(--win-line);cursor:grab;touch-action:none}
 .titlebar:active{cursor:grabbing}
 .lights{display:flex;gap:8px}
-.lights button{width:12px;height:12px;border-radius:50%;border:0;padding:0;cursor:pointer;position:relative}
+.lights button{width:12px;height:12px;flex:none;border-radius:50%;border:0;padding:0;margin:0;cursor:pointer;position:relative;display:grid;place-items:center;-webkit-appearance:none;appearance:none;line-height:0;font-size:0}
 .lights .c{background:var(--red)} .lights .n{background:var(--yellow)} .lights .x{background:var(--green)}
 .lights button::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.25)}
-.lights button::before{content:"";position:absolute;inset:0;background-position:center;background-repeat:no-repeat;background-size:8px 8px;opacity:0}
+.lights button::before{content:"";display:block;width:8px;height:8px;background-position:center;background-repeat:no-repeat;background-size:8px 8px;opacity:0}
 .lights:hover button::before,.lights button:focus-visible::before{opacity:1}
 .lights .c::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M1.5 1.5l5 5M6.5 1.5l-5 5' stroke='%234d0000' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E")}
 .lights .n::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M1.2 4h5.6' stroke='%23995700' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E")}
