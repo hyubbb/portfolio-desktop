@@ -59,12 +59,18 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   transform-origin:50% 100%;transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .22s}
 .win.opening{transform:scale(.92) translateY(30px);opacity:0}
 .win.min{transform:scale(.2) translateY(140vh);opacity:0;pointer-events:none}
-.titlebar{height:38px;flex:none;display:flex;align-items:center;gap:12px;padding:0 12px;background:var(--win-bar);border-bottom:1px solid var(--win-line);cursor:grab;touch-action:none}
+.titlebar{height:28px;flex:none;display:flex;align-items:center;gap:10px;padding:0 10px;background:var(--win-bar);border-bottom:1px solid var(--win-line);cursor:grab;touch-action:none}
 .titlebar:active{cursor:grabbing}
 .lights{display:flex;gap:8px}
 .lights button{width:12px;height:12px;border-radius:50%;border:0;padding:0;cursor:pointer;position:relative}
 .lights .c{background:var(--red)} .lights .n{background:var(--yellow)} .lights .x{background:var(--green)}
 .lights button::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.25)}
+.lights button::before{content:"";position:absolute;inset:0;background-position:center;background-repeat:no-repeat;background-size:8px 8px;opacity:0}
+.lights:hover button::before,.lights button:focus-visible::before{opacity:1}
+.lights .c::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M1.5 1.5l5 5M6.5 1.5l-5 5' stroke='%234d0000' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E")}
+.lights .n::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M1.2 4h5.6' stroke='%23995700' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E")}
+.lights .x::before{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3E%3Cpath d='M1.3 6.7V2.6l4.1 4.1zM6.7 1.3v4.1L2.6 1.3z' fill='%23006500'/%3E%3C/svg%3E")}
+.win:not(.front) .lights:hover .c{background:var(--red)} .win:not(.front) .lights:hover .n{background:var(--yellow)} .win:not(.front) .lights:hover .x{background:var(--green)}
 .lights button:focus-visible{outline:2px solid var(--win-ink);outline-offset:2px}
 .win:not(.front) .lights button{background:var(--win-line)}
 .wtitle{flex:1;text-align:center;font-weight:600;font-size:13px;color:var(--win-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:52px}
