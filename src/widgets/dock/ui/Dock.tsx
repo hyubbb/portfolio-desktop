@@ -1,5 +1,5 @@
 import { getRootItems, ItemDockIcon } from "@/entities/desktop-item";
-import { useWindowStore } from "@/entities/window";
+import { useTopWindowId, useWindowStore } from "@/entities/window";
 import { useLocalized, useT } from "@/shared/i18n";
 import { TrashIcon } from "@/shared/ui";
 import "./Dock.css";
@@ -8,8 +8,9 @@ export function Dock() {
   const t = useT();
   const localize = useLocalized();
   const openIds = useWindowStore((s) => s.windows);
+  const hasWindow = useTopWindowId() !== null;
   return (
-    <div className="dock" role="toolbar" aria-label="Dock">
+    <div className={hasWindow ? "dock has-window" : "dock"} role="toolbar" aria-label="Dock">
       {getRootItems().map((item) => {
         const label = localize(item.name);
         return (

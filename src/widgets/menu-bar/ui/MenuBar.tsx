@@ -13,7 +13,13 @@ function Clock() {
     lang === "ja"
       ? `${now.getMonth() + 1}月${now.getDate()}日(${weekday}) ${h}:${mm}`
       : `${now.getMonth() + 1}월 ${now.getDate()}일 (${weekday}) ${h < 12 ? "오전" : "오후"} ${h % 12 || 12}:${mm}`;
-  return <time dateTime={now.toISOString()}>{text}</time>;
+  const short = lang === "ja" ? `${h}:${mm}` : `${h < 12 ? "오전" : "오후"} ${h % 12 || 12}:${mm}`;
+  return (
+    <time dateTime={now.toISOString()}>
+      <span className="menu-bar__clock-full">{text}</span>
+      <span className="menu-bar__clock-short">{short}</span>
+    </time>
+  );
 }
 
 export function MenuBar() {

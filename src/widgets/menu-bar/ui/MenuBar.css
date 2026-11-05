@@ -5,4 +5,9 @@
 .menu-bar__brand i{width:14px;height:14px;border-radius:4px;background:linear-gradient(135deg,var(--sky-c),var(--sky-b));display:inline-block}
 .menu-bar__right{margin-left:auto;display:flex;gap:16px;align-items:center;font-variant-numeric:tabular-nums;white-space:nowrap}
 .menu-bar__who{opacity:.85}
-@media (max-width:640px){.menu-bar__who{display:none}}
+.menu-bar__clock-short{display:none}
+@media (max-width:640px){
+  .menu-bar__who,.menu-bar__clock-full{display:none}
+  .menu-bar__clock-short{display:inline}
+  .menu-bar__right{gap:10px}
+}

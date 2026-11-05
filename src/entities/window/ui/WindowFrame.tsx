@@ -34,7 +34,7 @@ export function WindowFrame({ id, title, titleAccessory, children }: WindowFrame
 
   const startDrag = (mode: DragMode) => (e: ReactPointerEvent<HTMLElement>) => {
     if (e.button !== 0 || isMobile()) return;
-    if ((e.target as HTMLElement).closest(".win-lights, .win-accessory")) return;
+    if ((e.target as HTMLElement).closest(".win-lights, .win-accessory, .win-back")) return;
     if (mode === "move" && win.maximized) return;
     e.preventDefault();
     const handle = e.currentTarget;
@@ -93,6 +93,10 @@ export function WindowFrame({ id, title, titleAccessory, children }: WindowFrame
           if (!(e.target as HTMLElement).closest(".win-lights, .win-accessory")) toggleMaximize(id);
         }}
       >
+        <button type="button" className="win-back" onClick={() => close(id)}>
+          <span aria-hidden="true">‹</span>
+          {t("close")}
+        </button>
         <div className="win-lights">
           <button type="button" className="win-light is-close" aria-label={t("close")} onClick={() => close(id)} />
           <button type="button" className="win-light is-minimize" aria-label={t("minimize")} onClick={() => minimize(id)} />

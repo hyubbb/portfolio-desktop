@@ -26,8 +26,18 @@
 .win-body iframe{flex:1;width:100%;border:0;background:var(--win);display:block}
 .win.is-dragging iframe{pointer-events:none}
 .win-resize{position:absolute;right:0;bottom:0;width:18px;height:18px;cursor:nwse-resize;touch-action:none}
+.win-back{display:none}
+/* 휴대폰: 창이 메뉴 막대 아래를 꽉 채우는 앱 화면처럼 열린다. 작은 신호등 대신 큰 닫기 버튼 */
 @media (max-width:700px){
-  .win{left:0!important;width:100vw!important;top:calc(env(safe-area-inset-top,0px) + 28px)!important;height:calc(100% - 28px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 84px)!important;border-radius:0 0 12px 12px;min-width:0}
-  .win-resize{display:none}
+  .win{left:0!important;width:100vw!important;top:calc(env(safe-area-inset-top,0px) + 28px)!important;height:calc(100% - 28px - env(safe-area-inset-top,0px))!important;border-radius:0;border:0;min-width:0;box-shadow:none}
+  .win.is-minimized{transform:translateY(100%)}
+  .win-resize,.win-lights,.win-title-spacer{display:none}
+  .win-titlebar{height:44px;cursor:default;padding:0 max(10px,env(safe-area-inset-right,0px)) 0 max(6px,env(safe-area-inset-left,0px))}
+  .win-back{display:flex;align-items:center;gap:2px;flex:none;border:0;background:none;color:var(--icon-sel);font:500 16px var(--f-ui);padding:8px 6px;border-radius:8px;cursor:pointer}
+  .win-back span{font-size:26px;line-height:16px;margin-top:-3px}
+  .win-back:focus-visible{outline:2px solid var(--icon-sel)}
+  .win-title{font-size:15px;color:var(--win-ink)}
+  .win-titlebar:not(:has(.win-accessory))::after{content:"";width:64px;flex:none}
+  .win-body{padding-bottom:env(safe-area-inset-bottom,0px)}
 }
 @media (prefers-reduced-motion:reduce){.win{transition:none}}

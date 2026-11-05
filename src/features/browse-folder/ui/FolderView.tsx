@@ -37,7 +37,7 @@ export function FolderView({ folder }: { folder: DesktopItem }) {
           />
         ))}
       </div>
-      <div className="folder-view__foot">{t("folderHint")}</div>
+      <div className="folder-view__foot">{t(isTouchOnly() ? "folderHintTouch" : "folderHint")}</div>
     </div>
   );
 }

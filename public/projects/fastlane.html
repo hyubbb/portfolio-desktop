@@ -97,7 +97,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--auto);outline-o
   <header>
     <div class="eyebrow">Flutter 화이트라벨 학원 앱 · iOS / Android 배포</div>
     <h1>셸 스크립트 배포와 fastlane 배포</h1>
-    <p class="lede">같은 학원 앱 하나를 배포할 때, 각 단계를 사람이 하는지 자동으로 진행되는지를 왼쪽·오른쪽 레인으로 나눴습니다.<br class="wide-br">셸 스크립트만 쓰던 시기는 단계가 두 레인을 계속 오가고, fastlane 도입 후에는 사람이 명령을 실행한 뒤로 전부 자동 레인에서 진행됩니다.</p>
+    <p class="lede">같은 학원 앱 하나를 배포할 때, 각 단계를 사람이 하는지 자동으로 진행되는지를 왼쪽·오른쪽 레인으로 나눴습니다. <br class="wide-br">셸 스크립트만 쓰던 시기는 단계가 두 레인을 계속 오가고, fastlane 도입 후에는 사람이 명령을 실행한 뒤로 전부 자동 레인에서 진행됩니다.</p>
   </header>
 
   <section class="score" aria-live="polite">
@@ -151,7 +151,7 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--auto);outline-o
   DICT["같은 학원 앱 하나를 배포할 때, 각 단계를 사람이 하는지 자동으로 진행되는지를 왼쪽·오른쪽 레인으로 나눴습니다."]="同じ学習塾アプリを1つデプロイするとき、各ステップを人が行うのか自動で進むのかを左右のレーンに分けました。";
   DICT["셸 스크립트만 쓰던 시기는 단계가 두 레인을 계속 오가고, fastlane 도입 후에는 사람이 명령을 실행한 뒤로 전부 자동 레인에서 진행됩니다."]="シェルスクリプトだけの時期はステップが2つのレーンを行き来し、fastlane 導入後は人がコマンドを実行したあと、すべて自動レーンで進みます。";
   /* 문장마다 줄을 나눈다 (넓은 화면에서만 보이는 줄바꿈) */
-  function setLines(el,text){el.textContent="";text.split(/(?<=[.。])\s*(?=\S)/).forEach(function(part,i){if(i){var br=document.createElement("br");br.className="wide-br";el.appendChild(br)}el.appendChild(document.createTextNode(part))})}
+  function setLines(el,text){el.textContent="";text.split(/(?<=[.。])\s*(?=\S)/).forEach(function(part,i){if(i){if(!JA)el.appendChild(document.createTextNode(" "));var br=document.createElement("br");br.className="wide-br";el.appendChild(br)}el.appendChild(document.createTextNode(part))})}
   if(JA){
     document.documentElement.lang="ja";document.title="シェルスクリプト vs fastlane";
     var tw=document.createTreeWalker(document.querySelector(".wrap"),NodeFilter.SHOW_TEXT),tn,list=[];

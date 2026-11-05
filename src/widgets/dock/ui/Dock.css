@@ -9,4 +9,12 @@
 .dock__separator{width:1px;height:46px;background:var(--dock-line);margin:0 2px;align-self:center}
 .dock__tip{position:absolute;bottom:68px;left:50%;transform:translateX(-50%);background:var(--menubar);color:var(--menu-ink);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:3px 9px;border-radius:6px;font-size:12px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s}
 .dock button:hover .dock__tip{opacity:1}
+/* 휴대폰에서는 창(앱)이 열려 있는 동안 독을 숨겨 화면을 넓게 쓴다 */
+@media (max-width:700px){
+  .dock{gap:6px;padding:6px 8px}
+  .dock button{width:50px;height:50px}
+  .dock button:hover{transform:none}
+  .dock__tip{display:none}
+  .dock.has-window{display:none}
+}
 @media (prefers-reduced-motion:reduce){.dock button{transition:none}}
