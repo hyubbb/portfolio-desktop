@@ -1,0 +1,12 @@
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:40;display:flex;align-items:flex-end;gap:8px;
+  padding:7px 9px;border-radius:20px;background:var(--dock);border:1px solid var(--dock-line);backdrop-filter:blur(26px) saturate(1.5);-webkit-backdrop-filter:blur(26px) saturate(1.5);max-width:calc(100vw - 24px)}
+.dock button{position:relative;width:54px;height:54px;border:0;padding:0;background:none;cursor:pointer;transition:transform .18s cubic-bezier(.2,.8,.2,1);transform-origin:50% 100%}
+.dock button:hover{transform:scale(1.22) translateY(-4px)}
+.dock button:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:12px}
+.dock svg{width:100%;height:100%;display:block}
+.dock__dot{position:absolute;left:50%;bottom:-6px;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--menu-ink);opacity:0}
+.dock .is-running .dock__dot{opacity:.8}
+.dock__separator{width:1px;height:46px;background:var(--dock-line);margin:0 2px;align-self:center}
+.dock__tip{position:absolute;bottom:68px;left:50%;transform:translateX(-50%);background:var(--menubar);color:var(--menu-ink);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:3px 9px;border-radius:6px;font-size:12px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s}
+.dock button:hover .dock__tip{opacity:1}
+@media (prefers-reduced-motion:reduce){.dock button{transition:none}}

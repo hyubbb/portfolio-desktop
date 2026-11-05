@@ -1,0 +1,1 @@
+.marquee-box{position:fixed;z-index:5;pointer-events:none;background:var(--marquee-bg);border:1px solid var(--marquee-line);border-radius:3px}

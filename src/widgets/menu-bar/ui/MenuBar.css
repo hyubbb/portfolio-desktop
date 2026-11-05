@@ -1,0 +1,8 @@
+.menu-bar{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);height:28px;z-index:50;display:flex;align-items:center;gap:18px;
+  padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));
+  background:var(--menubar);backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);font-size:13px}
+.menu-bar__brand{font-weight:700;display:flex;align-items:center;gap:7px}
+.menu-bar__brand i{width:14px;height:14px;border-radius:4px;background:linear-gradient(135deg,var(--sky-c),var(--sky-b));display:inline-block}
+.menu-bar__right{margin-left:auto;display:flex;gap:16px;align-items:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+.menu-bar__who{opacity:.85}
+@media (max-width:640px){.menu-bar__who{display:none}}

@@ -1,0 +1,19 @@
+/* 색·글꼴 토큰. 라이트 값이 기본이고, 다크 모드(시스템 설정 또는 data-theme)에서 다시 정의한다. */
+:root{
+  --menubar:rgba(246,246,250,.62); --menu-ink:#15161c; --icon-label:#ffffff;
+  --win:#f6f6f8; --win-bar:#ececf0; --win-line:#d4d4da; --win-ink:#1d1e24; --win-muted:#6c6e78;
+  --dock:rgba(255,255,255,.32); --dock-line:rgba(255,255,255,.45);
+  --sel:rgba(40,110,230,.55); --menu-bg:rgba(246,246,250,.78); --menu-line:rgba(0,0,0,.12); --menu-hl:#2b6cf0;
+  --icon-sel:#2f6ce8; --marquee-bg:rgba(255,255,255,.13); --marquee-line:rgba(255,255,255,.6);
+  --red:#ff5f57; --yellow:#febc2e; --green:#28c840;
+  --sky-a:#2a1f5c; --sky-b:#5b3b8c; --sky-c:#e0789a; --sky-d:#f6b27a;
+  --f-ui:"IBM Plex Sans KR","Apple SD Gothic Neo",-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --menubar:rgba(24,24,32,.58); --menu-ink:#f2f2f6; --win:#25262d; --win-bar:#2d2e36; --win-line:#3b3c46; --win-ink:#ececf1; --win-muted:#9a9ca8;
+  --dock:rgba(30,30,40,.42); --dock-line:rgba(255,255,255,.14); --menu-bg:rgba(36,36,42,.78); --menu-line:rgba(255,255,255,.14);
+  --sky-a:#0d0b24; --sky-b:#2a1c52; --sky-c:#7d3a6b; --sky-d:#c0645a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --menubar:rgba(24,24,32,.58); --menu-ink:#f2f2f6; --win:#25262d; --win-bar:#2d2e36; --win-line:#3b3c46; --win-ink:#ececf1; --win-muted:#9a9ca8;
+  --dock:rgba(30,30,40,.42); --dock-line:rgba(255,255,255,.14); --menu-bg:rgba(36,36,42,.78); --menu-line:rgba(255,255,255,.14);
+  --sky-a:#0d0b24; --sky-b:#2a1c52; --sky-c:#7d3a6b; --sky-d:#c0645a; color-scheme:dark}

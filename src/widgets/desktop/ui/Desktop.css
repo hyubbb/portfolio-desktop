@@ -1,0 +1,7 @@
+.desktop-surface{position:fixed;inset:0;z-index:1}
+.desktop-icons{position:fixed;top:calc(env(safe-area-inset-top,0px) + 44px);right:max(18px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px;align-items:center;z-index:2}
+.desktop-hint{position:fixed;margin:0;left:max(18px,env(safe-area-inset-left,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 96px);color:rgba(255,255,255,.82);font-size:12.5px;text-shadow:0 1px 3px rgba(0,0,0,.5);z-index:1;max-width:60vw;pointer-events:none}
+@media (max-width:700px){
+  .desktop-icons{flex-direction:row;flex-wrap:wrap;right:auto;left:max(12px,env(safe-area-inset-left,0px))}
+  .desktop-hint{display:none}
+}
