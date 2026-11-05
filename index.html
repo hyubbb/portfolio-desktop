@@ -16,17 +16,17 @@
   --menubar:rgba(246,246,250,.62); --menu-ink:#15161c; --icon-label:#ffffff;
   --win:#f6f6f8; --win-bar:#ececf0; --win-line:#d4d4da; --win-ink:#1d1e24; --win-muted:#6c6e78;
   --dock:rgba(255,255,255,.32); --dock-line:rgba(255,255,255,.45);
-  --sel:rgba(40,110,230,.55); --red:#ff5f57; --yellow:#febc2e; --green:#28c840;
+  --sel:rgba(40,110,230,.55); --menu-bg:rgba(246,246,250,.78); --menu-line:rgba(0,0,0,.12); --menu-hl:#2b6cf0; --icon-sel:#2f6ce8; --marquee-bg:rgba(255,255,255,.13); --marquee-line:rgba(255,255,255,.6); --red:#ff5f57; --yellow:#febc2e; --green:#28c840;
   --sky-a:#2a1f5c; --sky-b:#5b3b8c; --sky-c:#e0789a; --sky-d:#f6b27a;
   --f-ui:"IBM Plex Sans KR","Apple SD Gothic Neo",-apple-system,"Segoe UI",sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --menubar:rgba(24,24,32,.58); --menu-ink:#f2f2f6; --win:#25262d; --win-bar:#2d2e36; --win-line:#3b3c46; --win-ink:#ececf1; --win-muted:#9a9ca8;
-  --dock:rgba(30,30,40,.42); --dock-line:rgba(255,255,255,.14);
+  --dock:rgba(30,30,40,.42); --dock-line:rgba(255,255,255,.14); --menu-bg:rgba(36,36,42,.78); --menu-line:rgba(255,255,255,.14);
   --sky-a:#0d0b24; --sky-b:#2a1c52; --sky-c:#7d3a6b; --sky-d:#c0645a; color-scheme:dark}}
 :root[data-theme="dark"]{
   --menubar:rgba(24,24,32,.58); --menu-ink:#f2f2f6; --win:#25262d; --win-bar:#2d2e36; --win-line:#3b3c46; --win-ink:#ececf1; --win-muted:#9a9ca8;
-  --dock:rgba(30,30,40,.42); --dock-line:rgba(255,255,255,.14);
+  --dock:rgba(30,30,40,.42); --dock-line:rgba(255,255,255,.14); --menu-bg:rgba(36,36,42,.78); --menu-line:rgba(255,255,255,.14);
   --sky-a:#0d0b24; --sky-b:#2a1c52; --sky-c:#7d3a6b; --sky-d:#c0645a; color-scheme:dark}
 
 *{box-sizing:border-box}
@@ -45,14 +45,16 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .menubar .right{margin-left:auto;display:flex;gap:16px;align-items:center;font-variant-numeric:tabular-nums;white-space:nowrap}
 @media (max-width:640px){.menubar .m{display:none}}
 
-.icons{position:fixed;top:calc(env(safe-area-inset-top,0px) + 44px);right:max(18px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px;align-items:center;z-index:2}
+.icons{position:fixed;top:calc(env(safe-area-inset-top,0px) + 44px);right:max(18px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px;align-items:center;z-index:2}
 a.icon,.dock a.lnk{text-decoration:none}
-.icon{width:92px;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;padding:6px 4px;border-radius:8px;cursor:default;color:var(--icon-label);font:500 12px var(--f-ui)}
+.icon{width:100px;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;padding:0;cursor:default;color:var(--icon-label);font:500 12px var(--f-ui);outline:none}
+.icon .ic{display:grid;place-items:center;width:76px;height:70px;border-radius:12px;border:1px solid transparent}
 .icon svg{width:64px;height:56px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.25))}
-.icon span{padding:1px 6px;border-radius:4px;text-shadow:0 1px 3px rgba(0,0,0,.6);line-height:1.35;text-align:center}
-.icon.sel{background:rgba(255,255,255,.14)}
-.icon.sel span{background:var(--sel);text-shadow:none}
-.icon:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.icon .lb{max-width:100px;padding:1px 7px;border-radius:5px;text-shadow:0 1px 3px rgba(0,0,0,.6);line-height:1.4;text-align:center;overflow-wrap:anywhere}
+.icon.sel .ic{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.14)}
+.icon.sel .lb{background:var(--icon-sel);text-shadow:none}
+.icon:focus-visible .ic{box-shadow:0 0 0 2px #fff}
+.marquee{position:fixed;z-index:5;pointer-events:none;background:var(--marquee-bg);border:1px solid var(--marquee-line);border-radius:3px}
 .hint{position:fixed;left:max(18px,env(safe-area-inset-left,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 96px);color:rgba(255,255,255,.82);font-size:12.5px;text-shadow:0 1px 3px rgba(0,0,0,.5);z-index:1;max-width:60vw}
 
 .win{position:fixed;z-index:10;display:flex;flex-direction:column;background:var(--win);color:var(--win-ink);border-radius:12px;overflow:hidden;
@@ -81,6 +83,81 @@ a.icon,.dock a.lnk{text-decoration:none}
 .resize{position:absolute;right:0;bottom:0;width:18px;height:18px;cursor:nwse-resize;touch-action:none}
 .win.max{border-radius:0}
 
+.gh{flex:1;min-height:0;display:grid;grid-template-columns:210px 1fr;-webkit-user-select:text;user-select:text}
+.gh-side{background:var(--win-bar);border-right:1px solid var(--win-line);padding:18px 14px;display:flex;flex-direction:column;gap:8px;overflow:auto;min-width:0}
+.gh-av{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--sky-c),var(--sky-b));color:#fff;display:grid;place-items:center;font-size:26px;font-weight:700;overflow:hidden}
+.gh-av img{width:100%;height:100%;object-fit:cover;display:block}
+.gh-name{font-size:17px;font-weight:700;margin-top:4px}
+.gh-login{color:var(--win-muted);font-size:13px;margin-top:-6px}
+.gh-stats{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:12.5px;color:var(--win-muted)}
+.gh-stats b{color:var(--win-ink);font-variant-numeric:tabular-nums}
+.gh-stats .gh-loc{flex-basis:100%}
+.gh-sec{font-size:11px;font-weight:700;color:var(--win-muted);letter-spacing:.04em;margin-top:8px}
+.gh-langs{display:flex;flex-direction:column;gap:1px}
+.gh-lang{display:flex;align-items:center;gap:7px;border:0;background:none;color:var(--win-ink);font:500 13px var(--f-ui);padding:5px 8px;border-radius:6px;cursor:pointer;text-align:left}
+.gh-lang span{margin-left:auto;color:var(--win-muted);font-variant-numeric:tabular-nums;font-size:12px}
+.gh-lang.on{background:var(--sel);color:#fff}.gh-lang.on span{color:rgba(255,255,255,.85)}
+.gh-lang:focus-visible,.gh-row:focus-visible,.gh-open:focus-visible{outline:2px solid var(--sel);outline-offset:1px}
+.gh em,.gh-row em{display:inline-block;width:9px;height:9px;border-radius:50%;flex:none}
+.gh-fork{display:flex;align-items:center;gap:6px;font-size:12.5px;color:var(--win-muted);margin-top:6px;cursor:pointer}
+.gh-open{margin-top:auto;font-size:13px;font-weight:600;color:var(--win-ink);text-decoration:none;padding:7px 10px;border:1px solid var(--win-line);border-radius:7px;text-align:center;background:var(--win)}
+.gh-main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.gh-tool{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--win-line)}
+.gh-tool input{flex:1;min-width:0;font:13px var(--f-ui);padding:6px 10px;border-radius:7px;border:1px solid var(--win-line);background:var(--win-bar);color:var(--win-ink)}
+.gh-count{font-size:12px;color:var(--win-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.gh-head,.gh-row{display:grid;grid-template-columns:minmax(0,1fr) 110px 96px;gap:12px;align-items:center;padding:0 14px}
+.gh-head{font-size:11.5px;font-weight:600;color:var(--win-muted);padding-block:6px;border-bottom:1px solid var(--win-line)}
+.gh-list{flex:1;overflow:auto;min-height:0}
+.gh-row{padding-block:8px;text-decoration:none;color:var(--win-ink);border-bottom:1px solid var(--win-line)}
+.gh-row:nth-child(even){background:var(--win-bar)}
+.gh-row:hover{background:var(--sel);color:#fff}
+.gh-row:hover small,.gh-row:hover .gh-rl,.gh-row:hover .gh-rp,.gh-row:hover i{color:rgba(255,255,255,.85)}
+.gh-rn{display:grid;grid-template-columns:16px auto 1fr;column-gap:7px;align-items:center;min-width:0}
+.gh-rn svg{width:14px;height:14px;color:var(--win-muted)}
+.gh-rn b{font-weight:600;font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gh-rn i{font-style:normal;font-size:11px;color:var(--win-muted);border:1px solid var(--win-line);border-radius:4px;padding:0 4px;justify-self:start}
+.gh-rn small{grid-column:2/4;font-size:12px;color:var(--win-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.gh-rl,.gh-rp{font-size:12.5px;color:var(--win-muted);display:flex;align-items:center;gap:6px;white-space:nowrap}
+.gh-empty{padding:24px 14px;color:var(--win-muted);margin:0}
+.gh-status{font-size:11.5px;color:var(--win-muted);padding:6px 14px;border-top:1px solid var(--win-line);display:flex;align-items:center;gap:6px;background:var(--win-bar)}
+.gh-status .dot{width:7px;height:7px;border-radius:50%;background:var(--yellow)}
+.gh-status .dot.live{background:var(--green)}
+@media (max-width:700px){.gh{grid-template-columns:1fr;grid-template-rows:auto 1fr}.gh-side{flex-direction:row;flex-wrap:wrap;align-items:center;border-right:0;border-bottom:1px solid var(--win-line);padding:12px}.gh-av{width:40px;height:40px;font-size:18px}.gh-langs,.gh-sec{display:none}.gh-open{margin-top:0}.gh-head,.gh-row{grid-template-columns:minmax(0,1fr) 84px}.gh-head span:last-child,.gh-rp{display:none}}
+.lang{position:relative;display:flex}
+#lang-btn{display:flex;align-items:center;gap:6px;border:0;background:none;color:inherit;font:600 13px/18px var(--f-ui);padding:2px 9px;border-radius:6px;cursor:pointer}
+#lang-btn:hover,#lang-btn[aria-expanded="true"]{background:rgba(127,127,140,.22)}
+#lang-btn:focus-visible{outline:2px solid var(--sel);outline-offset:1px}
+#lang-btn svg{width:15px;height:15px}
+.lang-menu{position:absolute;top:27px;right:-2px;min-width:200px;padding:5px;border-radius:10px;background:var(--menu-bg);-webkit-backdrop-filter:blur(30px) saturate(1.7);backdrop-filter:blur(30px) saturate(1.7);color:var(--menu-ink);border:1px solid var(--menu-line);box-shadow:0 10px 30px rgba(0,0,0,.32);display:flex;flex-direction:column;gap:0;z-index:70}
+.lang-menu[hidden]{display:none}
+.lang-menu button{display:grid;grid-template-columns:14px 18px 1fr;align-items:center;column-gap:7px;border:0;background:none;color:inherit;font:400 13.5px/20px var(--f-ui);padding:3px 28px 3px 8px;border-radius:5px;text-align:left;cursor:pointer;white-space:nowrap}
+.lang-menu button > span:nth-child(2){font-size:14px;line-height:1;text-align:center}
+.lang-menu button:hover,.lang-menu button:focus-visible{background:var(--menu-hl);color:#fff;outline:none}
+.lang-menu .ck{visibility:hidden;font-size:12.5px;font-weight:700;text-align:center}
+.lang-menu button[aria-checked="true"] .ck{visibility:visible}
+.ext{flex:none;font-size:11.5px;font-weight:600;color:var(--win-muted);text-decoration:none;padding:1px 8px;border-radius:5px;border:1px solid var(--win-line);background:var(--win);white-space:nowrap}
+.ext:hover{color:var(--win-ink)}
+.ext:focus-visible{outline:2px solid var(--sel);outline-offset:1px}
+.win:has(.ext) .wtitle{margin-right:0}
+.xf{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center}
+.xf .ic{width:84px;height:76px;display:grid;place-items:center}
+.xf .ic svg{width:72px;height:64px}
+.xf b{font-size:17px}
+.xf p{margin:0;color:var(--win-muted);font-size:13.5px;max-width:42ch;line-height:1.55}
+.xf-btn{margin-top:4px;font-weight:600;font-size:14px;color:#fff;background:var(--icon-sel);text-decoration:none;padding:8px 16px;border-radius:8px}
+.xf-btn:focus-visible{outline:2px solid var(--win-ink);outline-offset:2px}
+.xf small{color:var(--win-muted);font-size:12px;max-width:46ch;line-height:1.5}
+.fd{flex:1;min-height:0;display:flex;flex-direction:column}
+.fd-bar{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:1px solid var(--win-line);font-size:12.5px}
+.fd-path{font-weight:600}
+.fd-n{margin-left:auto;color:var(--win-muted);font-variant-numeric:tabular-nums}
+.fd-grid{flex:1;overflow:auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));align-content:start;justify-items:center;gap:18px 8px;padding:20px 12px}
+.fd-item{width:160px;color:var(--win-ink)}
+.fd-item .lb{text-shadow:none;font-weight:600}
+.fd-item.sel .ic{background:rgba(127,127,140,.18);border-color:rgba(127,127,140,.2)}
+.fd-item.sel .lb{color:#fff}
+.fd-desc{font-size:11.5px;line-height:1.45;color:var(--win-muted);text-align:center;max-width:150px;font-weight:400}
+.fd-foot{font-size:11.5px;color:var(--win-muted);padding:6px 14px;border-top:1px solid var(--win-line);background:var(--win-bar)}
 .about{padding:22px 24px;display:flex;flex-direction:column;gap:10px;overflow:auto;-webkit-user-select:text;user-select:text}
 .about h2{margin:0;font-size:20px}
 .about p{margin:0;color:var(--win-muted);line-height:1.6;font-size:14px}
@@ -116,11 +193,17 @@ a.icon,.dock a.lnk{text-decoration:none}
 
 <header class="menubar">
   <span class="brand"><i></i>hyub</span>
-  <span class="right"><span class="m">이창협 · Frontend</span><span id="clock"></span></span>
+  <span class="right"><span class="m" id="who">이창협 · Frontend</span>
+    <span class="lang"><button type="button" id="lang-btn" aria-haspopup="menu" aria-expanded="false" aria-label="언어"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><circle cx="8" cy="8" r="6.3"/><path d="M1.8 8h12.4M8 1.7c-2.2 2.4-2.2 10.2 0 12.6M8 1.7c2.2 2.4 2.2 10.2 0 12.6"/></svg><span id="lang-code">KO</span></button>
+      <div class="lang-menu" id="lang-menu" role="menu" hidden>
+        <button type="button" role="menuitemradio" data-lang="ko" aria-checked="true"><span class="ck">✓</span><span>🇰🇷</span>한국어</button>
+        <button type="button" role="menuitemradio" data-lang="ja" aria-checked="false"><span class="ck">✓</span><span>🇯🇵</span>日本語</button>
+      </div></span>
+    <span id="clock"></span></span>
 </header>
 
 <nav class="icons" id="icons" aria-label="데스크톱"></nav>
-<p class="hint">아이콘을 더블클릭하면 열립니다.</p>
+<p class="hint" id="hint">아이콘을 더블클릭하면 열립니다.</p>
 
 <div class="dock" id="dock" role="toolbar" aria-label="Dock"></div>
 
@@ -128,10 +211,42 @@ a.icon,.dock a.lnk{text-decoration:none}
 (function(){
   /* 새 자료는 여기 한 줄씩 추가 */
   var ITEMS=[
-    {id:"github",name:"GitHub",kind:"link",href:"https://github.com/hyubbb"},
-    {id:"about",name:"README",kind:"doc",title:"README — 이창협",w:520,h:420},
-    {id:"fastlane",name:"fastlane",kind:"page",title:"fastlane — 셸 스크립트 배포와 fastlane 배포",src:"projects/fastlane.html",w:1180,h:780}
+    {id:"about",name:"README",kind:"doc",title:{ko:"README — 이창협",ja:"README — イ・チャンヒョップ"},w:520,h:420},
+    {id:"github",name:"GitHub",kind:"github",title:"hyubbb — GitHub",w:920,h:620},
+    {id:"fastlane",name:"fastlane",kind:"page",title:{ko:"fastlane — 셸 스크립트 배포와 fastlane 배포",ja:"fastlane — シェルスクリプトと fastlane のデプロイ比較"},src:"projects/fastlane.html",w:1180,h:1100},
+    {id:"lab",name:{ko:"실험실",ja:"実験室"},kind:"folder",title:{ko:"실험실",ja:"実験室"},w:640,h:380},
+    /* 실험실 폴더 안 프로젝트 — 배포 주소를 창 안에 띄움 */
+    {id:"talk-recap",parent:"lab",name:"talk-recap",kind:"project",url:"https://talk-recap.vercel.app",color:"#e0a91b",glyph:"chat",
+      title:{ko:"talk-recap — 카톡 대화 분석",ja:"talk-recap — カカオトーク会話分析"},
+      desc:{ko:"카톡 대화 파일을 올리면 멤버 분석, 관계, MBTI 추론을 보여 주는 웹 서비스",ja:"カカオトークの履歴をアップロードすると、メンバー分析・関係性・MBTI 推定を表示する Web サービス"},w:1100,h:760},
+    {id:"drink-sakaba",parent:"lab",name:"drink-sakaba",kind:"project",url:"https://drink-sakaba.vercel.app",color:"#c0392b",glyph:"cup",
+      title:{ko:"drink-sakaba — 온라인 혼술집",ja:"drink-sakaba — オンライン酒場"},
+      desc:{ko:"모르는 사람끼리 마주 앉아 술을 따라 주는 다인원 온라인 혼술집",ja:"知らない人同士が向かい合ってお酒を注ぎ合う、多人数オンライン酒場"},w:1100,h:760},
+    {id:"knitgrid",parent:"lab",name:"knitgrid",kind:"project",url:"https://knitgrid.vercel.app",color:"#2e8b6e",glyph:"grid",
+      title:{ko:"knitgrid — 뜨개 도안 만들기",ja:"knitgrid — 編み物の図案づくり"},
+      desc:{ko:"이미지나 빈 격자에서 시작해 뜨개·비즈 패턴 도안을 만드는 도구",ja:"画像や空のグリッドから編み物・ビーズの図案を作るツール"},w:1100,h:760}
   ];
+
+  /* ── 언어 (한국어 / 日本語) ── */
+  var I18N={
+    ko:{code:"KO",who:"이창협 · Frontend",hint:"아이콘을 더블클릭하면 열립니다.",trash:"휴지통",langLabel:"언어",close:"닫기",min:"최소화",max:"확대",
+      about:'<h2>이창협</h2><p>React · Next.js 프론트엔드 개발자입니다. 사용자가 불편해서 멈추는 지점을 찾아 고치고, 반복되는 일은 도구로 바꾸는 걸 좋아합니다.</p>',
+      ghLang:"언어",ghFork:"fork 숨기기",ghOpen:"GitHub에서 열기 ↗",ghSearch:"저장소 검색",ghName:"이름",ghUpdated:"최근 업데이트",ghLoading:"불러오는 중…",ghCount:"최근 {n}개",ghEmpty:"조건에 맞는 저장소가 없습니다.",
+      ghRepos:"저장소",ghFollowers:"팔로워",ghFollowing:"팔로잉",ghLive:"GitHub에서 방금 불러옴",ghSaved:"저장해 둔 정보 · {d} 기준",ghAll:"전체",ghOther:"기타",
+      newTab:"새 탭에서 열기 ↗",noEmbed:"이 미리보기 화면은 외부 사이트를 창 안에 띄우지 못해요. 배포된 포트폴리오 사이트에서는 창 안에서 바로 열립니다.",items:"항목 {n}개",folderHint:"더블클릭하면 창으로 열립니다. 창 오른쪽 위에서 새 탭으로도 열 수 있어요.",today:"오늘",days:"{n}일 전",months:"{n}개월 전",years:"{n}년 전"},
+    ja:{code:"JA",who:"イ・チャンヒョップ · Frontend",hint:"アイコンをダブルクリックすると開きます。",trash:"ゴミ箱",langLabel:"言語",close:"閉じる",min:"しまう",max:"拡大",
+      about:'<h2>イ・チャンヒョップ</h2><p>React・Next.js のフロントエンドエンジニアです。ユーザーが不便で手を止めてしまうところを見つけて直し、繰り返しの作業はツールに置き換えるのが好きです。</p>',
+      ghLang:"言語",ghFork:"fork を隠す",ghOpen:"GitHub で開く ↗",ghSearch:"リポジトリを検索",ghName:"名前",ghUpdated:"最終更新",ghLoading:"読み込み中…",ghCount:"最新 {n}件",ghEmpty:"条件に合うリポジトリがありません。",
+      ghRepos:"リポジトリ",ghFollowers:"フォロワー",ghFollowing:"フォロー中",ghLive:"GitHub から取得しました",ghSaved:"保存済みの情報 · {d} 時点",ghAll:"すべて",ghOther:"その他",
+      newTab:"新しいタブで開く ↗",noEmbed:"このプレビュー画面では外部サイトをウィンドウ内に表示できません。公開中のポートフォリオサイトではウィンドウ内でそのまま開きます。",items:"{n} 項目",folderHint:"ダブルクリックするとウィンドウで開きます。右上から新しいタブでも開けます。",today:"今日",days:"{n}日前",months:"{n}か月前",years:"{n}年前"}
+  };
+  var LANG=(function(){
+    try{var q=new URLSearchParams(location.search).get("lang");if(q==="ja"||q==="ko")return q}catch(e){}
+    try{var v=localStorage.getItem("lang");if(v==="ja"||v==="ko")return v}catch(e){}
+    return /^ja/i.test(navigator.language||"")?"ja":"ko";
+  })();
+  function T(k,v){var s=I18N[LANG][k];if(v)Object.keys(v).forEach(function(x){s=s.replace("{"+x+"}",v[x])});return s}
+  function LT(v){return v&&typeof v==="object"?v[LANG]:v}
 
   /* ── 하늘 배경 ── */
   var cv=document.getElementById("sky"),cx=cv.getContext("2d");
@@ -160,38 +275,70 @@ a.icon,.dock a.lnk{text-decoration:none}
   new MutationObserver(paint).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
 
   /* ── 시계 ── */
-  function tick(){var n=new Date(),w="일월화수목금토"[n.getDay()],h=n.getHours(),m=n.getMinutes();
-    document.getElementById("clock").textContent=(n.getMonth()+1)+"월 "+n.getDate()+"일 ("+w+") "+(h<12?"오전 ":"오후 ")+((h%12)||12)+":"+(m<10?"0":"")+m}
+  function tick(){var n=new Date(),h=n.getHours(),m=n.getMinutes(),mm=(m<10?"0":"")+m,el=document.getElementById("clock");
+    if(LANG==="ja")el.textContent=(n.getMonth()+1)+"月"+n.getDate()+"日("+"日月火水木金土"[n.getDay()]+") "+h+":"+mm;
+    else el.textContent=(n.getMonth()+1)+"월 "+n.getDate()+"일 ("+"일월화수목금토"[n.getDay()]+") "+(h<12?"오전 ":"오후 ")+((h%12)||12)+":"+mm}
   tick();setInterval(tick,15000);
 
   /* ── 아이콘 그림 ── */
-  function folderSVG(){return '<svg viewBox="0 0 64 56"><defs><linearGradient id="fb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7cc4f8"/><stop offset="1" stop-color="#3d97e6"/></linearGradient><linearGradient id="ff" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a6dafd"/><stop offset="1" stop-color="#5fb1f2"/></linearGradient></defs><path d="M4 9a4 4 0 0 1 4-4h14l5 5h29a4 4 0 0 1 4 4v34a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z" fill="url(#fb)"/><path d="M4 18a4 4 0 0 1 4-4h48a4 4 0 0 1 4 4v30a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z" fill="url(#ff)"/><path d="M24 30l6 5 10-10" fill="none" stroke="#2f7fcf" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/></svg>'}
+  function folderPaths(k){return '<defs><linearGradient id="fb'+k+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7cc4f8"/><stop offset="1" stop-color="#3d97e6"/></linearGradient><linearGradient id="ff'+k+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a6dafd"/><stop offset="1" stop-color="#5fb1f2"/></linearGradient></defs><path d="M2 8a4 4 0 0 1 4-4h14l5 5h23a4 4 0 0 1 4 4v29a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z" fill="url(#fb'+k+')"/><path d="M2 16a4 4 0 0 1 4-4h42a4 4 0 0 1 4 4v26a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4z" fill="url(#ff'+k+')"/>'}
+  function folderSVG(){return '<svg viewBox="0 0 64 56"><g transform="translate(5 4)">'+folderPaths("dt")+'</g></svg>'}
+  function projSVG(it){
+    var g=it.glyph==="chat"?'<path d="M24 25h16a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-8l-5 4v-4h-3a3 3 0 0 1-3-3v-8a3 3 0 0 1 3-3z" fill="#fff"/>'
+      :it.glyph==="cup"?'<path d="M25 25h14l-2 14a3 3 0 0 1-3 2.6h-4a3 3 0 0 1-3-2.6z" fill="#fff"/><path d="M27 30h10" stroke="'+it.color+'" stroke-width="2"/>'
+      :'<g fill="#fff"><rect x="23" y="24" width="5" height="5" rx="1"/><rect x="30" y="24" width="5" height="5" rx="1" opacity=".55"/><rect x="37" y="24" width="5" height="5" rx="1"/><rect x="23" y="31" width="5" height="5" rx="1" opacity=".55"/><rect x="30" y="31" width="5" height="5" rx="1"/><rect x="37" y="31" width="5" height="5" rx="1" opacity=".55"/><rect x="23" y="38" width="5" height="5" rx="1"/><rect x="30" y="38" width="5" height="5" rx="1" opacity=".55"/><rect x="37" y="38" width="5" height="5" rx="1"/></g>';
+    return '<svg viewBox="0 0 64 56"><path d="M16 3h22l12 12v36a3 3 0 0 1-3 3H16a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z" fill="#fbfbfd"/><path d="M38 3v10a2 2 0 0 0 2 2h10z" fill="#d9dbe2"/><rect x="18" y="20" width="28" height="26" rx="6" fill="'+it.color+'"/>'+g+'<text x="31" y="15" text-anchor="middle" font-family="monospace" font-size="6" font-weight="700" fill="#8d92a0">WEB</text></svg>'}
   function docSVG(){return '<svg viewBox="0 0 64 56"><path d="M16 3h22l12 12v36a3 3 0 0 1-3 3H16a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z" fill="#fbfbfd"/><path d="M38 3v10a2 2 0 0 0 2 2h10z" fill="#d9dbe2"/><g stroke="#a3a7b3" stroke-width="2" stroke-linecap="round"><path d="M20 24h22M20 30h22M20 36h16M20 42h20"/></g></svg>'}
   function pageSVG(){return '<svg viewBox="0 0 64 56"><defs><linearGradient id="pg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f7fa3"/><stop offset="1" stop-color="#103e57"/></linearGradient></defs><path d="M16 3h22l12 12v36a3 3 0 0 1-3 3H16a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z" fill="#fbfbfd"/><path d="M38 3v10a2 2 0 0 0 2 2h10z" fill="#d9dbe2"/><rect x="18" y="22" width="28" height="22" rx="5" fill="url(#pg)"/><g stroke="#fff" stroke-width="2" stroke-linecap="round" fill="none"><path d="M23 29h9M21 33h11M23 37h9"/><path d="M35 28l5 5-5 5" stroke-linejoin="round"/></g><text x="32" y="16" text-anchor="middle" font-family="monospace" font-size="6" font-weight="700" fill="#8d92a0">HTML</text></svg>'}
-  function iconFor(it){return it.kind==="folder"?folderSVG():it.kind==="page"?pageSVG():docSVG()}
+  function iconFor(it){return it.kind==="project"?projSVG(it):it.kind==="folder"?folderSVG():it.kind==="page"?pageSVG():it.kind==="github"?gitSVG(64):docSVG()}
   function dockSVG(kind){
     if(kind==="finder")return '<svg viewBox="0 0 54 54"><defs><linearGradient id="hd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e0789a"/><stop offset="1" stop-color="#5b3b8c"/></linearGradient></defs><rect x="2" y="2" width="50" height="50" rx="12" fill="url(#hd)"/><g fill="#fff"><rect x="13" y="13" width="12" height="12" rx="3"/><rect x="29" y="13" width="12" height="12" rx="3" opacity=".75"/><rect x="13" y="29" width="12" height="12" rx="3" opacity=".75"/><rect x="29" y="29" width="12" height="12" rx="3" opacity=".5"/></g></svg>';
     if(kind==="fastlane")return '<svg viewBox="0 0 54 54"><defs><linearGradient id="fl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f7fa3"/><stop offset="1" stop-color="#103e57"/></linearGradient></defs><rect x="2" y="2" width="50" height="50" rx="12" fill="url(#fl)"/><g stroke="#fff" stroke-width="3.2" stroke-linecap="round" fill="none"><path d="M12 19h18M8 27h24M12 35h18"/><path d="M34 15l9 12-9 12" stroke-linejoin="round"/></g></svg>';
+    if(kind==="github")return gitSVG(54);
+    if(kind==="folder")return '<svg viewBox="0 0 54 54"><g transform="translate(1 3)">'+folderPaths("dk")+'</g></svg>';
     if(kind==="doc")return '<svg viewBox="0 0 54 54"><rect x="2" y="2" width="50" height="50" rx="12" fill="#f4f4f7"/><g stroke="#8d92a0" stroke-width="2.6" stroke-linecap="round"><path d="M14 18h26M14 26h26M14 34h18"/></g></svg>';
     return '<svg viewBox="0 0 54 54"><path d="M14 14h26l-3 34a3 3 0 0 1-3 3H20a3 3 0 0 1-3-3z" fill="rgba(235,240,248,.75)" stroke="rgba(255,255,255,.9)" stroke-width="1.4"/><rect x="11" y="10" width="32" height="5" rx="2.5" fill="rgba(245,248,252,.9)"/><g stroke="rgba(120,130,150,.6)" stroke-width="1.6"><path d="M22 20l1 26M27 20v26M32 20l-1 26"/></g></svg>';
   }
 
   /* ── 데스크톱 아이콘 ── */
   var iconsEl=document.getElementById("icons");
-  ITEMS.slice().reverse().forEach(function(it){
+  ITEMS.forEach(function(it){
+    if(it.parent)return;
     if(it.kind==="link"){
       var a=document.createElement("a");a.className="icon";a.id="icon-"+it.id;a.href=it.href;a.target="_blank";a.rel="noopener";
-      a.innerHTML=gitSVG(64)+"<span>"+it.name+"</span>";iconsEl.appendChild(a);return;
+      a.innerHTML='<span class="ic">'+gitSVG(64)+'</span><span class="lb">'+it.name+"</span>";iconsEl.appendChild(a);return;
     }
     var b=document.createElement("button");b.type="button";b.className="icon";b.id="icon-"+it.id;
-    b.innerHTML=iconFor(it)+"<span>"+it.name+"</span>";
-    b.addEventListener("click",function(e){e.stopPropagation();select(b);if(matchMedia("(hover: none)").matches)open(it.id)});
+    b.innerHTML='<span class="ic">'+iconFor(it)+'</span><span class="lb">'+LT(it.name)+"</span>";
+    b.addEventListener("click",function(e){e.stopPropagation();if(e.metaKey||e.ctrlKey||e.shiftKey){b.classList.toggle("sel");return}select(b);if(matchMedia("(hover: none)").matches)open(it.id)});
     b.addEventListener("dblclick",function(){open(it.id)});
     b.addEventListener("keydown",function(e){if(e.key==="Enter")open(it.id)});
     iconsEl.appendChild(b);
   });
   function select(b){document.querySelectorAll(".icon.sel").forEach(function(x){x.classList.remove("sel")});if(b)b.classList.add("sel")}
-  document.addEventListener("click",function(e){if(!e.target.closest(".icon"))select(null)});
+  var justDragged=false;
+  document.addEventListener("click",function(e){if(justDragged){justDragged=false;return}if(!e.target.closest(".icon"))select(null)});
+
+  /* ── 바탕화면 드래그 선택 ── */
+  function onDesktop(t){return !t.closest(".win,.dock,.menubar,.icon,.lang-menu")}
+  document.addEventListener("pointerdown",function(e){
+    if(e.button!==0||e.pointerType==="touch"||!onDesktop(e.target))return;
+    var sx=e.clientX,sy=e.clientY,box=null,additive=e.metaKey||e.ctrlKey||e.shiftKey;
+    var base=additive?[].slice.call(document.querySelectorAll(".icon.sel")):[];
+    if(!additive)select(null);
+    function mv(ev){
+      var x=Math.min(sx,ev.clientX),y=Math.min(sy,ev.clientY),w=Math.abs(ev.clientX-sx),h=Math.abs(ev.clientY-sy);
+      if(!box){if(w<4&&h<4)return;box=document.createElement("div");box.className="marquee";document.body.appendChild(box);document.body.style.cursor="default"}
+      box.style.left=x+"px";box.style.top=y+"px";box.style.width=w+"px";box.style.height=h+"px";
+      document.querySelectorAll(".icon").forEach(function(ic){
+        var hit=[ic.querySelector(".ic"),ic.querySelector(".lb")].some(function(part){var r=part.getBoundingClientRect();return r.right>x&&r.left<x+w&&r.bottom>y&&r.top<y+h});
+        ic.classList.toggle("sel",hit||base.indexOf(ic)>=0);
+      });
+    }
+    function up(){removeEventListener("pointermove",mv);removeEventListener("pointerup",up);removeEventListener("pointercancel",up);
+      if(box){box.remove();justDragged=true;setTimeout(function(){justDragged=false},0)}document.body.style.cursor=""}
+    addEventListener("pointermove",mv);addEventListener("pointerup",up);addEventListener("pointercancel",up);
+  });
 
   /* ── 독 ── */
   var dock=document.getElementById("dock"),dockBtns={};
@@ -201,28 +348,98 @@ a.icon,.dock a.lnk{text-decoration:none}
     b.addEventListener("click",fn);dock.appendChild(b);dockBtns[key]=b;
   }
   ITEMS.forEach(function(it){
+    if(it.parent)return;
     if(it.kind==="link"){var a=document.createElement("a");a.className="lnk";a.href=it.href;a.target="_blank";a.rel="noopener";a.setAttribute("aria-label",it.name+" 열기");
       a.innerHTML=gitSVG(54)+'<span class="tip">'+it.name+'</span>';dock.appendChild(a);return;}
-    addDock(it.id,it.name,it.kind==="page"?"fastlane":"doc",function(){open(it.id)})});
+    addDock(it.id,LT(it.name),it.kind==="page"?"fastlane":it.kind==="github"?"github":it.kind==="folder"?"folder":"doc",function(){open(it.id)})});
   function gitSVG(s){var h=s===64?56:54,ox=s===64?7:2,oy=s===64?3:2;
     return '<svg viewBox="0 0 '+s+' '+h+'"><g transform="translate('+ox+' '+oy+')"><rect width="50" height="50" rx="12" fill="#24292f"/><g stroke="#fff" stroke-width="3" fill="none" stroke-linecap="round"><path d="M17 12v26"/><path d="M33 18c0 9-16 7-16 16"/></g><g fill="#24292f" stroke="#fff" stroke-width="3"><circle cx="17" cy="12" r="4"/><circle cx="17" cy="38" r="4"/><circle cx="33" cy="15" r="4"/></g></g></svg>'}
   var sep=document.createElement("span");sep.className="sep";dock.appendChild(sep);
-  addDock("trash","휴지통","trash",function(){});
+  addDock("trash",T("trash"),"trash",function(){});
+
+  /* ── GitHub 창: 공개 API로 불러오고, 막히면 저장해 둔 정보로 표시 ── */
+  var GH_USER="hyubbb", GH_SNAPSHOT_DATE="2026-11-05";
+  var GH_SNAPSHOT={"user":{"login":"hyubbb","name":"hyub","public_repos":41,"followers":3,"following":3,"location":"South Korea"},"repos":[{"n":"portfolio-desktop","d":"portfolio-blog","l":"HTML","s":0,"p":"2026-11-05","f":false},{"n":"drink-sakaba","d":"drink-sakaba","l":"TypeScript","s":0,"p":"2026-11-05","f":false},{"n":"talk-recap","d":" 파일을 올리면 멤버 분석, 관계·궁합, MBTI 추론 등, 보여주는 웹 서비스.","l":"TypeScript","s":0,"p":"2026-11-04","f":false},{"n":"MenuCycle","d":"메뉴바에서 웹페이지를 띄워 쓰는 macOS 앱","l":"Swift","s":0,"p":"2026-11-04","f":false},{"n":"souka-walk","d":"옛날에 살던 동네 만들기, 레트로 3D","l":"TypeScript","s":0,"p":"2026-11-03","f":false},{"n":"knitgrid","d":"이미지를 업로드하거나 빈 격자에서 시작해 뜨개/비즈/패턴 도안만들기","l":"HTML","s":0,"p":"2026-10-26","f":false},{"n":"jlpt-n2","d":"JLPT 단어·문법 학습장","l":"TypeScript","s":0,"p":"2026-10-25","f":false},{"n":"reader-focus","d":"채용 공고를 평범한 문서로 바꿔 읽는 크롬 확장 (MV3)","l":"JavaScript","s":0,"p":"2026-08-06","f":false},{"n":"shorts-remix","d":"","l":"TypeScript","s":0,"p":"2026-07-27","f":false},{"n":"yt-make","d":"음악 파일로 유튜브 플레이리스트 영상을 만드는 로컬 편집기 + Remotion 렌더러","l":"TypeScript","s":0,"p":"2026-07-26","f":false},{"n":"questi_event_cube","d":"","l":"TypeScript","s":0,"p":"2026-01-21","f":false},{"n":"questi_event_maketen","d":"","l":"TypeScript","s":0,"p":"2026-01-21","f":false},{"n":"frontend-fundamentals-mock-exam-1","d":"","l":null,"s":0,"p":"2025-11-12","f":true},{"n":"gacha_v1","d":"","l":"TypeScript","s":0,"p":"2025-08-28","f":false},{"n":"v0-gacha-manage-system","d":"","l":"TypeScript","s":0,"p":"2025-08-05","f":false},{"n":"microservices-demo","d":"Sample cloud-first application with 10 microservices showcasing Kubernetes, Istio, and gRPC.","l":null,"s":0,"p":"2025-07-25","f":true},{"n":"chat-app","d":"Next, Socket.io를 이용한 실시간 채팅기능","l":"TypeScript","s":0,"p":"2025-07-11","f":false},{"n":"ds-score-omr","d":"","l":"TypeScript","s":0,"p":"2025-06-19","f":false},{"n":"rn-social-app","d":"react-native로 sns와 채팅기능을 만들어 볼 것","l":"TypeScript","s":0,"p":"2024-11-21","f":false},{"n":"next-movie-app","d":"","l":"TypeScript","s":0,"p":"2024-11-21","f":false},{"n":"rn-social-app-server","d":"rn-social-app express서버","l":"TypeScript","s":0,"p":"2024-10-28","f":false},{"n":"component_projects","d":"자주 사용하는 컴포넌트들을 미리 만들어서 필요할때 참고하기 위한 저장","l":"TypeScript","s":0,"p":"2024-10-03","f":false},{"n":"react-poke-app","d":"","l":"JavaScript","s":0,"p":"2024-10-01","f":false},{"n":"discord-app","d":"","l":"TypeScript","s":0,"p":"2024-07-04","f":false},{"n":"lx-location","d":"","l":"JavaScript","s":0,"p":"2024-06-11","f":false},{"n":"next-discord-app","d":"","l":null,"s":0,"p":"2024-06-05","f":false},{"n":"react-note-recoil-app","d":"","l":"TypeScript","s":0,"p":"2024-06-02","f":false},{"n":"rn-delivery-app","d":"","l":"TypeScript","s":0,"p":"2024-05-29","f":false},{"n":"rn-folders","d":"","l":null,"s":0,"p":"2024-05-21","f":false},{"n":"hyub-components","d":"","l":null,"s":0,"p":"2024-05-19","f":false},{"n":"sign-page","d":"","l":"JavaScript","s":0,"p":"2024-05-19","f":false},{"n":"career-project","d":"이전 회사에서 작업했던 광고스크립트","l":"JavaScript","s":0,"p":"2024-05-15","f":false},{"n":"react-native-todo-app","d":"","l":"JavaScript","s":0,"p":"2024-05-01","f":false},{"n":"portfolio","d":"","l":"JavaScript","s":0,"p":"2024-04-23","f":false},{"n":"react-native-weather","d":"","l":"JavaScript","s":0,"p":"2024-04-10","f":false},{"n":"react-board-app","d":"","l":"JavaScript","s":0,"p":"2024-04-04","f":false},{"n":"design","d":"","l":"JavaScript","s":0,"p":"2024-04-03","f":false},{"n":"react-note-app","d":"","l":"TypeScript","s":0,"p":"2024-04-01","f":false},{"n":"cote","d":"coding test practice","l":"JavaScript","s":0,"p":"2024-03-25","f":false},{"n":"react-shop-app","d":"","l":"TypeScript","s":0,"p":"2024-03-21","f":false},{"n":"starbucks","d":"fastcampus starbucks","l":"HTML","s":0,"p":"2023-03-26","f":false}]};
+  var LANG_COLOR={TypeScript:"#3178c6",JavaScript:"#e2c541",HTML:"#e34c26",Swift:"#f05138",CSS:"#663399",Python:"#3572a5",Kotlin:"#a97bff",Dart:"#00b4ab"};
+  function ghHTML(){return '<div class="gh"><aside class="gh-side"><div class="gh-av" data-av>H</div><div class="gh-name" data-name>hyub</div><div class="gh-login">@'+GH_USER+'</div><div class="gh-stats" data-stats></div><div class="gh-sec">'+T("ghLang")+'</div><div class="gh-langs" data-langs></div><label class="gh-fork" for="gh-fork"><input type="checkbox" id="gh-fork" checked> '+T("ghFork")+'</label><a class="gh-open" href="https://github.com/'+GH_USER+'" target="_blank" rel="noopener">'+T("ghOpen")+'</a></aside><div class="gh-main"><div class="gh-tool"><input type="search" id="gh-q" placeholder="'+T("ghSearch")+'" aria-label="'+T("ghSearch")+'"><span class="gh-count" data-count></span></div><div class="gh-head"><span>'+T("ghName")+'</span><span>'+T("ghLang")+'</span><span>'+T("ghUpdated")+'</span></div><div class="gh-list" data-list></div><div class="gh-status" data-status>'+T("ghLoading")+'</div></div></div>'}
+  function ghEsc(s){return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
+  function ghAgo(d){var days=Math.floor((Date.now()-new Date(d+"T00:00:00"))/864e5);if(days<1)return T("today");if(days<31)return T("days",{n:days});if(days<365)return T("months",{n:Math.floor(days/30)});return T("years",{n:Math.floor(days/365)})}
+  function initGH(el){
+    var q=function(s){return el.querySelector(s)}, data=null, lang="__all";
+    var LIMIT=16;
+    function base(){var hide=q("#gh-fork").checked;
+      return data.repos.filter(function(r){return!hide||!r.f}).sort(function(a,b){return a.p<b.p?1:a.p>b.p?-1:0}).slice(0,LIMIT)}
+    function render(){
+      var term=q("#gh-q").value.trim().toLowerCase();
+      var rows=base().filter(function(r){return(lang==="__all"||(r.l||"__other")===lang)&&(!term||(r.n+" "+r.d).toLowerCase().indexOf(term)>=0)});
+      q("[data-count]").textContent=T("ghCount",{n:rows.length});
+      q("[data-list]").innerHTML=rows.length?rows.map(function(r){var c=LANG_COLOR[r.l]||"#8b8f9c";
+        return '<a class="gh-row" href="https://github.com/'+GH_USER+'/'+encodeURIComponent(r.n)+'" target="_blank" rel="noopener"><span class="gh-rn"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 2.5A1.5 1.5 0 0 1 4.5 1h8v12h-8A1.5 1.5 0 0 0 3 14.5zM3 14.5A1.5 1.5 0 0 1 4.5 13h8v2h-8A1.5 1.5 0 0 1 3 14.5z" fill="none" stroke="currentColor" stroke-width="1.2"/></svg><b>'+ghEsc(r.n)+'</b>'+(r.f?'<i>fork</i>':'')+(r.d.trim()?'<small>'+ghEsc(r.d.trim())+'</small>':'')+'</span><span class="gh-rl">'+(r.l?'<em style="background:'+c+'"></em>'+ghEsc(r.l):'—')+'</span><span class="gh-rp">'+ghAgo(r.p)+'</span></a>'}).join(""):'<p class="gh-empty">'+T("ghEmpty")+'</p>';
+    }
+    function langs(){
+      var top=base(),m={};top.forEach(function(r){var k=r.l||"__other";m[k]=(m[k]||0)+1});
+      var keys=Object.keys(m).sort(function(a,b){return m[b]-m[a]});
+      q("[data-langs]").innerHTML=["__all"].concat(keys).map(function(k){return '<button type="button" class="gh-lang'+(k===lang?' on':'')+'" data-l="'+ghEsc(k)+'">'+(k==="__all"?'':'<em style="background:'+(LANG_COLOR[k]||"#8b8f9c")+'"></em>')+ghEsc(k==="__all"?T("ghAll"):k==="__other"?T("ghOther"):k)+'<span>'+(k==="__all"?top.length:m[k])+'</span></button>'}).join("");
+      q("[data-langs]").querySelectorAll("button").forEach(function(b){b.addEventListener("click",function(){lang=b.getAttribute("data-l");langs();render()})});
+    }
+    function show(d,live,avatar){
+      data=d;var u=d.user;
+      q("[data-name]").textContent=u.name||u.login;
+      q("[data-stats]").innerHTML='<span><b>'+u.public_repos+'</b> '+T("ghRepos")+'</span><span><b>'+u.followers+'</b> '+T("ghFollowers")+'</span><span><b>'+u.following+'</b> '+T("ghFollowing")+'</span>'+(u.location?'<span class="gh-loc">'+ghEsc(u.location)+'</span>':'');
+      if(avatar){var img=new Image();img.alt="";img.onload=function(){var av=q("[data-av]");av.textContent="";av.appendChild(img)};img.src=avatar}
+      q("[data-status]").innerHTML=live?'<span class="dot live"></span>'+T("ghLive"):'<span class="dot"></span>'+T("ghSaved",{d:GH_SNAPSHOT_DATE});
+      langs();render();
+    }
+    q("#gh-q").addEventListener("input",function(){if(data)render()});
+    q("#gh-fork").addEventListener("change",function(){if(data){if(lang!=="__all"&&!base().some(function(r){return(r.l||"__other")===lang}))lang="__all";langs();render()}});
+    var ctrl=typeof AbortController!=="undefined"?new AbortController():null, timer=setTimeout(function(){if(ctrl)ctrl.abort()},6000);
+    var opt=ctrl?{signal:ctrl.signal}:{};
+    Promise.all([
+      fetch("https://api.github.com/users/"+GH_USER,opt).then(function(r){if(!r.ok)throw r.status;return r.json()}),
+      fetch("https://api.github.com/users/"+GH_USER+"/repos?sort=pushed&per_page=100",opt).then(function(r){if(!r.ok)throw r.status;return r.json()})
+    ]).then(function(res){clearTimeout(timer);var u=res[0];
+      show({user:{login:u.login,name:u.name,public_repos:u.public_repos,followers:u.followers,following:u.following,location:u.location},
+        repos:res[1].map(function(x){return{n:x.name,d:x.description||"",l:x.language,s:x.stargazers_count,p:(x.pushed_at||"").slice(0,10),f:x.fork}})},true,u.avatar_url);
+    }).catch(function(){clearTimeout(timer);show(GH_SNAPSHOT,false,null)});
+  }
+
+  /* ── 외부 사이트를 창에 넣을 수 있는 환경인지 (Claude 미리보기는 외부 사이트를 막음) ── */
+  var CAN_EMBED=!/claude|anthropic/i.test(location.hostname);
+  function extHTML(it){return '<div class="xf"><span class="ic">'+projSVG(it)+'</span><b>'+it.name+'</b><p>'+LT(it.desc)+'</p><a class="xf-btn" href="'+it.url+'" target="_blank" rel="noopener">'+T("newTab")+'</a><small>'+T("noEmbed")+'</small></div>'}
+
+  /* ── 폴더 창 ── */
+  function folderHTML(f){
+    var kids=ITEMS.filter(function(x){return x.parent===f.id});
+    return '<div class="fd"><div class="fd-bar"><span class="fd-path">'+LT(f.name)+'</span><span class="fd-n">'+T("items",{n:kids.length})+'</span></div><div class="fd-grid">'+
+      kids.map(function(k){return '<button type="button" class="icon fd-item" data-open="'+k.id+'"><span class="ic">'+projSVG(k)+'</span><span class="lb">'+k.name+'</span><span class="fd-desc">'+LT(k.desc)+'</span></button>'}).join("")+
+      '</div><div class="fd-foot">'+T("folderHint")+'</div></div>'}
+  function initFolder(el){
+    el.querySelectorAll(".fd-item").forEach(function(b){
+      var id=b.getAttribute("data-open");
+      b.addEventListener("click",function(e){e.stopPropagation();el.querySelectorAll(".fd-item.sel").forEach(function(x){x.classList.remove("sel")});b.classList.add("sel");if(matchMedia("(hover: none)").matches)open(id)});
+      b.addEventListener("dblclick",function(){open(id)});
+      b.addEventListener("keydown",function(e){if(e.key==="Enter")open(id)});
+    });
+    el.querySelector(".fd-grid").addEventListener("click",function(e){if(!e.target.closest(".fd-item"))el.querySelectorAll(".fd-item.sel").forEach(function(x){x.classList.remove("sel")})});
+  }
 
   /* ── 창 ── */
   var wins={},z=10,offset=0;
-  function aboutHTML(){return '<div class="about"><h2>이창협</h2><p>React · Next.js 프론트엔드 개발자입니다. 사용자가 불편해서 멈추는 지점을 찾아 고치고, 반복되는 일은 도구로 바꾸는 걸 좋아합니다.</p><ul><li><b>fastlane</b> · 학원 앱 배포 자동화</li></ul></div>'}
+  function aboutHTML(){return '<div class="about">'+T("about")+'</div>'}
+  function srcFor(it){return it.src+(it.src.indexOf("?")<0?"?":"&")+"lang="+LANG}
   function front(w){z++;w.el.style.zIndex=z;Object.keys(wins).forEach(function(k){wins[k].el.classList.toggle("front",wins[k]===w)})}
   function open(id){
     var it=ITEMS.filter(function(x){return x.id===id})[0];if(!it)return;
     if(wins[id]){wins[id].el.classList.remove("min");front(wins[id]);setHash(id);return}
-    var el=document.createElement("section");el.className="win opening";el.setAttribute("role","dialog");el.setAttribute("aria-label",it.title);
-    var W=Math.min(it.w,innerWidth-40),H=Math.min(it.h,innerHeight-130);
-    var L=Math.max(20,(innerWidth-W)/2+offset),T=Math.max(40,(innerHeight-H)/2-20+offset);offset=(offset+26)%104;
-    el.style.cssText="left:"+L+"px;top:"+T+"px;width:"+W+"px;height:"+H+"px";
-    el.innerHTML='<div class="titlebar"><div class="lights"><button class="c" type="button" aria-label="닫기"></button><button class="n" type="button" aria-label="최소화"></button><button class="x" type="button" aria-label="확대"></button></div><div class="wtitle">'+it.title+'</div></div>'+
-      (it.src?'<iframe src="'+it.src+'" title="'+it.title+'" loading="eager"></iframe>':aboutHTML())+'<div class="resize"></div>';
-    document.body.appendChild(el);
+    var el=document.createElement("section");el.className="win opening";el.setAttribute("role","dialog");el.setAttribute("aria-label",LT(it.title));
+    var W=Math.min(it.w,innerWidth-40),H=Math.min(it.h,innerHeight-48);
+    var tall=H>innerHeight-150;
+    var X0=Math.max(20,(innerWidth-W)/2+offset),Y0=tall?36+Math.min(offset,12):Math.max(40,(innerHeight-H)/2-20+offset);offset=(offset+26)%104;
+    el.style.cssText="left:"+X0+"px;top:"+Y0+"px;width:"+W+"px;height:"+H+"px";
+    el.innerHTML='<div class="titlebar"><div class="lights"><button class="c" type="button" aria-label="'+T("close")+'"></button><button class="n" type="button" aria-label="'+T("min")+'"></button><button class="x" type="button" aria-label="'+T("max")+'"></button></div><div class="wtitle">'+LT(it.title)+'</div>'+(it.url?'<a class="ext" href="'+it.url+'" target="_blank" rel="noopener">'+T("newTab")+'</a>':'')+'</div>'+
+      (it.url?(CAN_EMBED?'<iframe src="'+it.url+'" title="'+LT(it.title)+'" loading="eager" allow="clipboard-write; fullscreen"></iframe>':extHTML(it)):it.src?'<iframe src="'+srcFor(it)+'" title="'+LT(it.title)+'" loading="eager"></iframe>':it.kind==="folder"?folderHTML(it):(it.kind==="github"?ghHTML():aboutHTML()))+'<div class="resize"></div>';
+    document.body.appendChild(el);if(it.kind==="github")initGH(el);
+    var fr=el.querySelector("iframe");if(fr&&it.src)fr.addEventListener("load",function(){try{fr.contentWindow.document.addEventListener("keydown",closeKey)}catch(_){}});if(it.kind==="folder")initFolder(el);
     var w={el:el,item:it,prev:null};wins[id]=w;front(w);
     requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.remove("opening")})});
     el.addEventListener("pointerdown",function(){front(w)},true);
@@ -253,7 +470,50 @@ a.icon,.dock a.lnk{text-decoration:none}
       handle.addEventListener("pointermove",mv);handle.addEventListener("pointerup",up);handle.addEventListener("pointercancel",up);
     });
   }
-  addEventListener("keydown",function(e){if(e.key==="Escape"){var top=null;Object.keys(wins).forEach(function(k){if(!top||+wins[k].el.style.zIndex>+top.el.style.zIndex)top=wins[k]});if(top)close(top.item.id)}});
+  function topWin(){var top=null;Object.keys(wins).forEach(function(k){var w=wins[k];if(w.el.classList.contains("min"))return;if(!top||+w.el.style.zIndex>+top.el.style.zIndex)top=w});return top}
+  /* 창 닫기 단축키: Esc, ⌥W, Ctrl+W (⌘W는 브라우저가 먼저 탭을 닫아서 페이지가 받을 수 있을 때만 동작) */
+  function closeKey(e){
+    if(!document.getElementById("lang-menu").hidden)return;
+    var isW=e.code==="KeyW"&&(e.altKey||e.ctrlKey||e.metaKey);
+    if(e.key!=="Escape"&&!isW)return;
+    var top=topWin();if(!top)return;
+    if(isW)e.preventDefault();
+    close(top.item.id);
+  }
+  addEventListener("keydown",closeKey);
+
+  /* ── 언어 적용 ── */
+  var langBtn=document.getElementById("lang-btn"),langMenu=document.getElementById("lang-menu");
+  function applyLang(l,save){
+    LANG=l;document.documentElement.lang=l;
+    if(save){try{localStorage.setItem("lang",l)}catch(e){}}
+    document.getElementById("lang-code").textContent=T("code");
+    langBtn.setAttribute("aria-label",T("langLabel"));
+    document.getElementById("who").textContent=T("who");
+    document.getElementById("hint").textContent=T("hint");
+    langMenu.querySelectorAll("[data-lang]").forEach(function(b){b.setAttribute("aria-checked",String(b.getAttribute("data-lang")===l))});
+    var tb=dockBtns.trash;tb.setAttribute("aria-label",T("trash"));tb.querySelector(".tip").textContent=T("trash");
+    tick();
+    ITEMS.forEach(function(it){if(it.parent)return;var ic=document.getElementById("icon-"+it.id);if(ic)ic.querySelector(".lb").textContent=LT(it.name);
+      var db=dockBtns[it.id];if(db){db.setAttribute("aria-label",LT(it.name));db.querySelector(".tip").textContent=LT(it.name)}});
+    Object.keys(wins).forEach(function(k){var w=wins[k],it=w.item,el=w.el;
+      el.setAttribute("aria-label",LT(it.title));el.querySelector(".wtitle").textContent=LT(it.title);
+      el.querySelector(".c").setAttribute("aria-label",T("close"));el.querySelector(".n").setAttribute("aria-label",T("min"));el.querySelector(".x").setAttribute("aria-label",T("max"));
+      if(it.src&&!it.url){var f=el.querySelector("iframe");f.title=LT(it.title);f.src=srcFor(it)}
+      else if(it.kind==="github"){var t=document.createElement("div");t.innerHTML=ghHTML();el.querySelector(".gh").replaceWith(t.firstChild);initGH(el)}
+      else if(it.kind==="folder"){var fdv=document.createElement("div");fdv.innerHTML=folderHTML(it);el.querySelector(".fd").replaceWith(fdv.firstChild);initFolder(el)}
+      else if(it.url&&!CAN_EMBED){var xv=document.createElement("div");xv.innerHTML=extHTML(it);el.querySelector(".xf").replaceWith(xv.firstChild)}
+      else if(!it.url){var a=document.createElement("div");a.innerHTML=aboutHTML();el.querySelector(".about").replaceWith(a.firstChild)}
+      var ex=el.querySelector(".ext");if(ex)ex.textContent=T("newTab");
+    });
+  }
+  function setMenu(openIt){langMenu.hidden=!openIt;langBtn.setAttribute("aria-expanded",String(openIt));if(openIt)langMenu.querySelector('[aria-checked="true"]').focus()}
+  langBtn.addEventListener("click",function(e){e.stopPropagation();setMenu(langMenu.hidden)});
+  langMenu.querySelectorAll("[data-lang]").forEach(function(b){b.addEventListener("click",function(e){e.stopPropagation();applyLang(b.getAttribute("data-lang"),true);setMenu(false);langBtn.focus()})});
+  document.addEventListener("click",function(e){if(!langMenu.hidden&&!e.target.closest(".lang"))setMenu(false)});
+  langMenu.addEventListener("keydown",function(e){var items=[].slice.call(langMenu.querySelectorAll("button")),i=items.indexOf(document.activeElement);
+    if(e.key==="ArrowDown"){e.preventDefault();items[(i+1)%items.length].focus()}else if(e.key==="ArrowUp"){e.preventDefault();items[(i-1+items.length)%items.length].focus()}else if(e.key==="Escape"){e.stopPropagation();setMenu(false);langBtn.focus()}});
+  applyLang(LANG,false);
 
   /* ── 해시로 바로 열기 (#fastlane) ── */
   var hashLock=false;
