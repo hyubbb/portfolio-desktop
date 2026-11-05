@@ -2,23 +2,26 @@ import { DOCK_SPACE, MENUBAR_HEIGHT, type Viewport } from "@/shared/lib";
 import type { Rect, Size } from "../model/types";
 
 const SIDE_GAP = 20;
-const BOTTOM_GAP = 12;
 const TOP_GAP = 8;
-/** 화면을 거의 다 차지하는 창은 가운데 대신 메뉴 막대 바로 아래에 붙인다 */
-const TALL_THRESHOLD = 150;
+/** 독과 창 사이에 남기는 여백 */
+const DOCK_GAP = 8;
+const MAX_CASCADE_Y = 12;
 
 /**
  * 새 창 위치를 정한다. 여러 창을 열면 offset만큼 계단식으로 비켜 놓는다.
- * 원하는 크기가 화면보다 크면 화면에 맞춰 줄인다.
+ * 창은 메뉴 막대 아래, 독 위의 영역 안에 들어가도록 크기를 줄이고
+ * 그 영역 안에서 가운데에 놓는다 (독에 가려지지 않게).
  */
 export function placeWindow(size: Size, viewport: Viewport, offset = 0): Rect {
+  const top = MENUBAR_HEIGHT + TOP_GAP;
+  const bottom = viewport.height - DOCK_SPACE - DOCK_GAP;
+  const cascadeY = Math.min(offset, MAX_CASCADE_Y);
+  const available = Math.max(0, bottom - top - cascadeY);
+
   const width = Math.min(size.width, viewport.width - SIDE_GAP * 2);
-  const height = Math.min(size.height, viewport.height - MENUBAR_HEIGHT - TOP_GAP - BOTTOM_GAP);
-  const tall = height > viewport.height - TALL_THRESHOLD;
+  const height = Math.min(size.height, available);
   const x = Math.max(SIDE_GAP, (viewport.width - width) / 2 + offset);
-  const y = tall
-    ? MENUBAR_HEIGHT + TOP_GAP + Math.min(offset, 12)
-    : Math.max(MENUBAR_HEIGHT + 12, (viewport.height - height) / 2 - 20 + offset);
+  const y = top + cascadeY + Math.max(0, (available - height) / 2);
   return { x: Math.round(x), y: Math.round(y), width: Math.round(width), height: Math.round(height) };
 }
 
