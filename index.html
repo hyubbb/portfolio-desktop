@@ -127,11 +127,12 @@ a.icon,.dock a.lnk{text-decoration:none}
 #lang-btn{display:flex;align-items:center;gap:6px;border:0;background:none;color:inherit;font:600 13px/18px var(--f-ui);padding:2px 9px;border-radius:6px;cursor:pointer}
 #lang-btn:hover,#lang-btn[aria-expanded="true"]{background:rgba(127,127,140,.22)}
 #lang-btn:focus-visible{outline:2px solid var(--sel);outline-offset:1px}
-#lang-btn svg{width:15px;height:15px}
-.lang-menu{position:absolute;top:27px;right:-2px;min-width:200px;padding:5px;border-radius:10px;background:var(--menu-bg);-webkit-backdrop-filter:blur(30px) saturate(1.7);backdrop-filter:blur(30px) saturate(1.7);color:var(--menu-ink);border:1px solid var(--menu-line);box-shadow:0 10px 30px rgba(0,0,0,.32);display:flex;flex-direction:column;gap:0;z-index:70}
+#lang-btn svg{width:15px;height:15px;display:block;flex:none}
+.lang-menu{position:absolute;top:27px;right:-2px;min-width:0;padding:5px;border-radius:10px;background:var(--menu-bg);-webkit-backdrop-filter:blur(30px) saturate(1.7);backdrop-filter:blur(30px) saturate(1.7);color:var(--menu-ink);border:1px solid var(--menu-line);box-shadow:0 10px 30px rgba(0,0,0,.32);display:flex;flex-direction:column;gap:0;z-index:70}
 .lang-menu[hidden]{display:none}
-.lang-menu button{display:grid;grid-template-columns:14px 18px 1fr;align-items:center;column-gap:7px;border:0;background:none;color:inherit;font:400 13.5px/20px var(--f-ui);padding:3px 28px 3px 8px;border-radius:5px;text-align:left;cursor:pointer;white-space:nowrap}
-.lang-menu button > span:nth-child(2){font-size:14px;line-height:1;text-align:center}
+.lang-menu button{display:grid;grid-template-columns:14px 18px 1fr;align-items:center;column-gap:7px;border:0;background:none;color:inherit;font:400 13.5px/20px var(--f-ui);padding:3px 12px 3px 8px;border-radius:5px;text-align:left;cursor:pointer;white-space:nowrap}
+.lang-menu button > span{display:flex;align-items:center;justify-content:center;height:20px}
+.lang-menu button > span:nth-child(2){font-size:15px;line-height:1}
 .lang-menu button:hover,.lang-menu button:focus-visible{background:var(--menu-hl);color:#fff;outline:none}
 .lang-menu .ck{visibility:hidden;font-size:12.5px;font-weight:700;text-align:center}
 .lang-menu button[aria-checked="true"] .ck{visibility:visible}
