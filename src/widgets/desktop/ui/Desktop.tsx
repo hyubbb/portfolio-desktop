@@ -66,7 +66,11 @@ export function Desktop() {
         ))}
       </nav>
       <MarqueeBox box={box} />
-      <p className="desktop-hint">{t("hint")}</p>
+      <p className="desktop-hint">
+        {t("hint")}
+        <br />
+        {t("hintClose")}
+      </p>
     </>
   );
 }
