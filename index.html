@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="이창협 프론트엔드 포트폴리오">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}[hidden]{display:none!important}</style>
+<title>hyub — 이창협 포트폴리오</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: 맥 데스크톱 한 화면. 위 메뉴 막대, 오른쪽 위 아이콘 열, 아래 독, 그 위에 뜨는 창들 */
+:root{
+  --menubar:rgba(246,246,250,.62); --menu-ink:#15161c; --icon-label:#ffffff;
+  --win:#f6f6f8; --win-bar:#ececf0; --win-line:#d4d4da; --win-ink:#1d1e24; --win-muted:#6c6e78;
+  --dock:rgba(255,255,255,.32); --dock-line:rgba(255,255,255,.45);
+  --sel:rgba(40,110,230,.55); --red:#ff5f57; --yellow:#febc2e; --green:#28c840;
+  --sky-a:#2a1f5c; --sky-b:#5b3b8c; --sky-c:#e0789a; --sky-d:#f6b27a;
+  --f-ui:"IBM Plex Sans KR","Apple SD Gothic Neo",-apple-system,"Segoe UI",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --menubar:rgba(24,24,32,.58); --menu-ink:#f2f2f6; --win:#25262d; --win-bar:#2d2e36; --win-line:#3b3c46; --win-ink:#ececf1; --win-muted:#9a9ca8;
+  --dock:rgba(30,30,40,.42); --dock-line:rgba(255,255,255,.14);
+  --sky-a:#0d0b24; --sky-b:#2a1c52; --sky-c:#7d3a6b; --sky-d:#c0645a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --menubar:rgba(24,24,32,.58); --menu-ink:#f2f2f6; --win:#25262d; --win-bar:#2d2e36; --win-line:#3b3c46; --win-ink:#ececf1; --win-muted:#9a9ca8;
+  --dock:rgba(30,30,40,.42); --dock-line:rgba(255,255,255,.14);
+  --sky-a:#0d0b24; --sky-b:#2a1c52; --sky-c:#7d3a6b; --sky-d:#c0645a; color-scheme:dark}
+
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;overflow:hidden;font-family:var(--f-ui);font-size:13px;color:var(--menu-ink);background:var(--sky-a);-webkit-user-select:none;user-select:none}
+#sky{position:fixed;inset:0;width:100%;height:100%;display:block}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:60;background:var(--menubar)}
+
+.menubar{position:fixed;left:0;right:0;top:env(safe-area-inset-top,0px);height:28px;z-index:50;display:flex;align-items:center;gap:18px;
+  padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px));
+  background:var(--menubar);backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);font-size:13px}
+.menubar .brand{font-weight:700;display:flex;align-items:center;gap:7px}
+.menubar .brand i{width:14px;height:14px;border-radius:4px;background:linear-gradient(135deg,var(--sky-c),var(--sky-b));display:inline-block}
+.menubar .app{font-weight:600}
+.menubar .m{opacity:.85}
+.menubar .right{margin-left:auto;display:flex;gap:16px;align-items:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+@media (max-width:640px){.menubar .m{display:none}}
+
+.icons{position:fixed;top:calc(env(safe-area-inset-top,0px) + 44px);right:max(18px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px;align-items:center;z-index:2}
+.icon{width:92px;display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:0;padding:6px 4px;border-radius:8px;cursor:default;color:var(--icon-label);font:500 12px var(--f-ui)}
+.icon svg{width:64px;height:56px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.25))}
+.icon span{padding:1px 6px;border-radius:4px;text-shadow:0 1px 3px rgba(0,0,0,.6);line-height:1.35;text-align:center}
+.icon.sel{background:rgba(255,255,255,.14)}
+.icon.sel span{background:var(--sel);text-shadow:none}
+.icon:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.hint{position:fixed;left:max(18px,env(safe-area-inset-left,0px));bottom:calc(env(safe-area-inset-bottom,0px) + 96px);color:rgba(255,255,255,.82);font-size:12.5px;text-shadow:0 1px 3px rgba(0,0,0,.5);z-index:1;max-width:60vw}
+
+.win{position:fixed;z-index:10;display:flex;flex-direction:column;background:var(--win);color:var(--win-ink);border-radius:12px;overflow:hidden;
+  border:1px solid var(--win-line);box-shadow:0 24px 70px rgba(0,0,0,.42),0 2px 8px rgba(0,0,0,.2);min-width:320px;min-height:220px;
+  transform-origin:50% 100%;transition:transform .28s cubic-bezier(.2,.8,.2,1),opacity .22s}
+.win.opening{transform:scale(.92) translateY(30px);opacity:0}
+.win.min{transform:scale(.2) translateY(140vh);opacity:0;pointer-events:none}
+.titlebar{height:38px;flex:none;display:flex;align-items:center;gap:12px;padding:0 12px;background:var(--win-bar);border-bottom:1px solid var(--win-line);cursor:grab;touch-action:none}
+.titlebar:active{cursor:grabbing}
+.lights{display:flex;gap:8px}
+.lights button{width:12px;height:12px;border-radius:50%;border:0;padding:0;cursor:pointer;position:relative}
+.lights .c{background:var(--red)} .lights .n{background:var(--yellow)} .lights .x{background:var(--green)}
+.lights button::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.25)}
+.lights button:focus-visible{outline:2px solid var(--win-ink);outline-offset:2px}
+.win:not(.front) .lights button{background:var(--win-line)}
+.wtitle{flex:1;text-align:center;font-weight:600;font-size:13px;color:var(--win-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-right:52px}
+.win.front .wtitle{color:var(--win-ink)}
+.win iframe{flex:1;width:100%;border:0;background:var(--win);display:block}
+.win.dragging iframe{pointer-events:none}
+.resize{position:absolute;right:0;bottom:0;width:18px;height:18px;cursor:nwse-resize;touch-action:none}
+.win.max{border-radius:0}
+
+.about{padding:22px 24px;display:flex;flex-direction:column;gap:10px;overflow:auto;-webkit-user-select:text;user-select:text}
+.about h2{margin:0;font-size:20px}
+.about p{margin:0;color:var(--win-muted);line-height:1.6;font-size:14px}
+.about ul{margin:0;padding-left:18px;line-height:1.8;font-size:14px}
+.about a{color:inherit}
+
+.dock{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 10px);z-index:40;display:flex;align-items:flex-end;gap:8px;
+  padding:7px 9px;border-radius:20px;background:var(--dock);border:1px solid var(--dock-line);backdrop-filter:blur(26px) saturate(1.5);-webkit-backdrop-filter:blur(26px) saturate(1.5);max-width:calc(100vw - 24px)}
+.dock button{position:relative;width:54px;height:54px;border:0;padding:0;background:none;cursor:pointer;transition:transform .18s cubic-bezier(.2,.8,.2,1);transform-origin:50% 100%}
+.dock button:hover{transform:scale(1.22) translateY(-4px)}
+.dock button:focus-visible{outline:2px solid #fff;outline-offset:3px;border-radius:12px}
+.dock svg{width:100%;height:100%;display:block}
+.dock .dot{position:absolute;left:50%;bottom:-6px;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--menu-ink);opacity:0}
+.dock .on .dot{opacity:.8}
+.dock .sep{width:1px;height:46px;background:var(--dock-line);margin:0 2px;align-self:center}
+.dock .tip{position:absolute;bottom:68px;left:50%;transform:translateX(-50%);background:var(--menubar);color:var(--menu-ink);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);padding:3px 9px;border-radius:6px;font-size:12px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s}
+.dock button:hover .tip{opacity:1}
+
+@media (max-width:700px){
+  .win{left:0!important;width:100vw!important;top:calc(env(safe-area-inset-top,0px) + 28px)!important;height:calc(100% - 28px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px) - 84px)!important;border-radius:0 0 12px 12px;min-width:0}
+  .resize{display:none}
+  .icons{flex-direction:row;flex-wrap:wrap;right:auto;left:max(12px,env(safe-area-inset-left,0px))}
+  .hint{display:none}
+}
+@media (prefers-reduced-motion:reduce){.win,.dock button{transition:none}}
+</style>
+
+<canvas id="sky" aria-hidden="true"></canvas>
+
+<header class="menubar">
+  <span class="brand"><i></i>hyub</span>
+  <span class="right"><span class="m">이창협 · Frontend</span><span id="clock"></span></span>
+</header>
+
+<nav class="icons" id="icons" aria-label="데스크톱"></nav>
+<p class="hint">아이콘을 더블클릭하면 열립니다.</p>
+
+<div class="dock" id="dock" role="toolbar" aria-label="Dock"></div>
+
+<script>
+(function(){
+  /* 새 자료는 여기 한 줄씩 추가 */
+  var ITEMS=[
+    {id:"about",name:"README",kind:"doc",title:"README — 이창협",w:520,h:420},
+    {id:"fastlane",name:"fastlane",kind:"folder",title:"fastlane — 셸 스크립트 배포와 fastlane 배포",src:"projects/fastlane.html",w:1180,h:780}
+  ];
+
+  /* ── 하늘 배경 ── */
+  var cv=document.getElementById("sky"),cx=cv.getContext("2d");
+  function css(n){return getComputedStyle(document.documentElement).getPropertyValue(n).trim()}
+  function paint(){
+    var d=Math.min(window.devicePixelRatio||1,2),W=innerWidth,H=innerHeight;
+    cv.width=W*d;cv.height=H*d;cx.setTransform(d,0,0,d,0,0);
+    var g=cx.createLinearGradient(0,0,0,H);
+    g.addColorStop(0,css("--sky-a"));g.addColorStop(.45,css("--sky-b"));g.addColorStop(.78,css("--sky-c"));g.addColorStop(1,css("--sky-d"));
+    cx.fillStyle=g;cx.fillRect(0,0,W,H);
+    var r=cx.createRadialGradient(W*.32,H*.86,0,W*.32,H*.86,Math.max(W,H)*.45);
+    r.addColorStop(0,"rgba(255,220,170,.5)");r.addColorStop(1,"rgba(255,220,170,0)");cx.fillStyle=r;cx.fillRect(0,0,W,H);
+    var layers=[[.72,.10,"rgba(30,20,60,.35)"],[.8,.08,"rgba(25,15,50,.5)"],[.88,.06,"rgba(15,10,35,.7)"]];
+    layers.forEach(function(L,i){
+      cx.beginPath();cx.moveTo(0,H);
+      for(var x=0;x<=W;x+=8){var y=H*L[0]+Math.sin(x/(150+i*60)+i*1.7)*H*L[1]*.5+Math.sin(x/(53+i*20)+i)*H*L[1]*.18;cx.lineTo(x,y)}
+      cx.lineTo(W,H);cx.closePath();cx.fillStyle=L[2];cx.fill();
+    });
+    var rnd=1;function rr(){rnd=(rnd*16807)%2147483647;return rnd/2147483647}
+    cx.fillStyle="rgba(255,255,255,.7)";
+    for(var s=0;s<90;s++){var sx=rr()*W,sy=rr()*H*.45,sz=rr()*1.3+.2;cx.globalAlpha=.25+rr()*.6;cx.fillRect(sx,sy,sz,sz)}
+    cx.globalAlpha=1;
+  }
+  paint();addEventListener("resize",paint);
+  try{matchMedia("(prefers-color-scheme: dark)").addEventListener("change",paint)}catch(e){}
+  new MutationObserver(paint).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+
+  /* ── 시계 ── */
+  function tick(){var n=new Date(),w="일월화수목금토"[n.getDay()],h=n.getHours(),m=n.getMinutes();
+    document.getElementById("clock").textContent=(n.getMonth()+1)+"월 "+n.getDate()+"일 ("+w+") "+(h<12?"오전 ":"오후 ")+((h%12)||12)+":"+(m<10?"0":"")+m}
+  tick();setInterval(tick,15000);
+
+  /* ── 아이콘 그림 ── */
+  function folderSVG(){return '<svg viewBox="0 0 64 56"><defs><linearGradient id="fb" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7cc4f8"/><stop offset="1" stop-color="#3d97e6"/></linearGradient><linearGradient id="ff" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#a6dafd"/><stop offset="1" stop-color="#5fb1f2"/></linearGradient></defs><path d="M4 9a4 4 0 0 1 4-4h14l5 5h29a4 4 0 0 1 4 4v34a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z" fill="url(#fb)"/><path d="M4 18a4 4 0 0 1 4-4h48a4 4 0 0 1 4 4v30a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4z" fill="url(#ff)"/><path d="M24 30l6 5 10-10" fill="none" stroke="#2f7fcf" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/></svg>'}
+  function docSVG(){return '<svg viewBox="0 0 64 56"><path d="M16 3h22l12 12v36a3 3 0 0 1-3 3H16a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3z" fill="#fbfbfd"/><path d="M38 3v10a2 2 0 0 0 2 2h10z" fill="#d9dbe2"/><g stroke="#a3a7b3" stroke-width="2" stroke-linecap="round"><path d="M20 24h22M20 30h22M20 36h16M20 42h20"/></g></svg>'}
+  function iconFor(it){return it.kind==="folder"?folderSVG():docSVG()}
+  function dockSVG(kind){
+    if(kind==="finder")return '<svg viewBox="0 0 54 54"><defs><linearGradient id="hd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e0789a"/><stop offset="1" stop-color="#5b3b8c"/></linearGradient></defs><rect x="2" y="2" width="50" height="50" rx="12" fill="url(#hd)"/><g fill="#fff"><rect x="13" y="13" width="12" height="12" rx="3"/><rect x="29" y="13" width="12" height="12" rx="3" opacity=".75"/><rect x="13" y="29" width="12" height="12" rx="3" opacity=".75"/><rect x="29" y="29" width="12" height="12" rx="3" opacity=".5"/></g></svg>';
+    if(kind==="fastlane")return '<svg viewBox="0 0 54 54"><defs><linearGradient id="fl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1f7fa3"/><stop offset="1" stop-color="#103e57"/></linearGradient></defs><rect x="2" y="2" width="50" height="50" rx="12" fill="url(#fl)"/><g stroke="#fff" stroke-width="3.2" stroke-linecap="round" fill="none"><path d="M12 19h18M8 27h24M12 35h18"/><path d="M34 15l9 12-9 12" stroke-linejoin="round"/></g></svg>';
+    if(kind==="doc")return '<svg viewBox="0 0 54 54"><rect x="2" y="2" width="50" height="50" rx="12" fill="#f4f4f7"/><g stroke="#8d92a0" stroke-width="2.6" stroke-linecap="round"><path d="M14 18h26M14 26h26M14 34h18"/></g></svg>';
+    return '<svg viewBox="0 0 54 54"><path d="M14 14h26l-3 34a3 3 0 0 1-3 3H20a3 3 0 0 1-3-3z" fill="rgba(235,240,248,.75)" stroke="rgba(255,255,255,.9)" stroke-width="1.4"/><rect x="11" y="10" width="32" height="5" rx="2.5" fill="rgba(245,248,252,.9)"/><g stroke="rgba(120,130,150,.6)" stroke-width="1.6"><path d="M22 20l1 26M27 20v26M32 20l-1 26"/></g></svg>';
+  }
+
+  /* ── 데스크톱 아이콘 ── */
+  var iconsEl=document.getElementById("icons");
+  ITEMS.slice().reverse().forEach(function(it){
+    var b=document.createElement("button");b.type="button";b.className="icon";b.id="icon-"+it.id;
+    b.innerHTML=iconFor(it)+"<span>"+it.name+"</span>";
+    b.addEventListener("click",function(e){e.stopPropagation();select(b);if(matchMedia("(hover: none)").matches)open(it.id)});
+    b.addEventListener("dblclick",function(){open(it.id)});
+    b.addEventListener("keydown",function(e){if(e.key==="Enter")open(it.id)});
+    iconsEl.appendChild(b);
+  });
+  function select(b){document.querySelectorAll(".icon.sel").forEach(function(x){x.classList.remove("sel")});if(b)b.classList.add("sel")}
+  document.addEventListener("click",function(e){if(!e.target.closest(".icon"))select(null)});
+
+  /* ── 독 ── */
+  var dock=document.getElementById("dock"),dockBtns={};
+  function addDock(key,label,kind,fn){
+    var b=document.createElement("button");b.type="button";b.setAttribute("aria-label",label);
+    b.innerHTML=dockSVG(kind)+'<span class="dot"></span><span class="tip">'+label+'</span>';
+    b.addEventListener("click",fn);dock.appendChild(b);dockBtns[key]=b;
+  }
+  addDock("finder","모든 창 보기","finder",function(){Object.keys(wins).forEach(function(k){wins[k].el.classList.remove("min")})});
+  ITEMS.forEach(function(it){addDock(it.id,it.name,it.kind==="folder"?"fastlane":"doc",function(){open(it.id)})});
+  var sep=document.createElement("span");sep.className="sep";dock.appendChild(sep);
+  addDock("trash","휴지통","trash",function(){});
+
+  /* ── 창 ── */
+  var wins={},z=10,offset=0;
+  function aboutHTML(){return '<div class="about"><h2>이창협</h2><p>React · Next.js 프론트엔드 개발자입니다. 사용자가 불편해서 멈추는 지점을 찾아 고치고, 반복되는 일은 도구로 바꾸는 걸 좋아합니다.</p><ul><li><b>fastlane</b> · 학원 앱 배포 자동화</li></ul></div>'}
+  function front(w){z++;w.el.style.zIndex=z;Object.keys(wins).forEach(function(k){wins[k].el.classList.toggle("front",wins[k]===w)})}
+  function open(id){
+    var it=ITEMS.filter(function(x){return x.id===id})[0];if(!it)return;
+    if(wins[id]){wins[id].el.classList.remove("min");front(wins[id]);setHash(id);return}
+    var el=document.createElement("section");el.className="win opening";el.setAttribute("role","dialog");el.setAttribute("aria-label",it.title);
+    var W=Math.min(it.w,innerWidth-40),H=Math.min(it.h,innerHeight-130);
+    var L=Math.max(20,(innerWidth-W)/2+offset),T=Math.max(40,(innerHeight-H)/2-20+offset);offset=(offset+26)%104;
+    el.style.cssText="left:"+L+"px;top:"+T+"px;width:"+W+"px;height:"+H+"px";
+    el.innerHTML='<div class="titlebar"><div class="lights"><button class="c" type="button" aria-label="닫기"></button><button class="n" type="button" aria-label="최소화"></button><button class="x" type="button" aria-label="확대"></button></div><div class="wtitle">'+it.title+'</div></div>'+
+      (it.src?'<iframe src="'+it.src+'" title="'+it.title+'" loading="eager"></iframe>':aboutHTML())+'<div class="resize"></div>';
+    document.body.appendChild(el);
+    var w={el:el,item:it,prev:null};wins[id]=w;front(w);
+    requestAnimationFrame(function(){requestAnimationFrame(function(){el.classList.remove("opening")})});
+    el.addEventListener("pointerdown",function(){front(w)},true);
+    el.querySelector(".c").addEventListener("click",function(e){e.stopPropagation();close(id)});
+    el.querySelector(".n").addEventListener("click",function(e){e.stopPropagation();el.classList.add("min");setHash("")});
+    el.querySelector(".x").addEventListener("click",function(e){e.stopPropagation();toggleMax(w)});
+    el.querySelector(".titlebar").addEventListener("dblclick",function(e){if(!e.target.closest(".lights"))toggleMax(w)});
+    drag(w,el.querySelector(".titlebar"),false);drag(w,el.querySelector(".resize"),true);
+    if(dockBtns[id])dockBtns[id].classList.add("on");
+    setHash(id);
+  }
+  function close(id){var w=wins[id];if(!w)return;w.el.classList.add("opening");setTimeout(function(){w.el.remove()},220);delete wins[id];
+    if(dockBtns[id])dockBtns[id].classList.remove("on");setHash("")}
+  function toggleMax(w){var s=w.el.style;
+    if(w.prev){s.cssText=w.prev;w.prev=null;w.el.classList.remove("max");return}
+    w.prev=s.cssText;w.el.classList.add("max");
+    s.left="0px";s.top="calc(env(safe-area-inset-top,0px) + 28px)";s.width="100vw";s.height="calc(100% - 28px - env(safe-area-inset-top,0px) - 84px)";s.zIndex=w.el.style.zIndex}
+  function drag(w,handle,resize){
+    handle.addEventListener("pointerdown",function(e){
+      if(e.target.closest(".lights")||matchMedia("(max-width:700px)").matches)return;
+      if(w.prev&&!resize)return;
+      e.preventDefault();handle.setPointerCapture(e.pointerId);w.el.classList.add("dragging");
+      var r=w.el.getBoundingClientRect(),sx=e.clientX,sy=e.clientY;
+      function mv(ev){var dx=ev.clientX-sx,dy=ev.clientY-sy;
+        if(resize){w.el.style.width=Math.max(320,r.width+dx)+"px";w.el.style.height=Math.max(220,r.height+dy)+"px"}
+        else{w.el.style.left=Math.min(innerWidth-80,Math.max(-r.width+80,r.left+dx))+"px";w.el.style.top=Math.min(innerHeight-60,Math.max(28,r.top+dy))+"px"}}
+      function up(){handle.removeEventListener("pointermove",mv);handle.removeEventListener("pointerup",up);handle.removeEventListener("pointercancel",up);w.el.classList.remove("dragging")}
+      handle.addEventListener("pointermove",mv);handle.addEventListener("pointerup",up);handle.addEventListener("pointercancel",up);
+    });
+  }
+  addEventListener("keydown",function(e){if(e.key==="Escape"){var top=null;Object.keys(wins).forEach(function(k){if(!top||+wins[k].el.style.zIndex>+top.el.style.zIndex)top=wins[k]});if(top)close(top.item.id)}});
+
+  /* ── 해시로 바로 열기 (#fastlane) ── */
+  var hashLock=false;
+  function setHash(id){hashLock=true;try{if(id)history.replaceState(null,"","#"+id);else history.replaceState(null,"",location.pathname+location.search)}catch(e){try{location.hash=id}catch(_){} }setTimeout(function(){hashLock=false},0)}
+  function fromHash(){if(hashLock)return;var id=(location.hash||"").slice(1);if(id&&ITEMS.some(function(x){return x.id===id}))open(id)}
+  addEventListener("hashchange",fromHash);
+  if(location.hash)fromHash();
+  else if(!matchMedia("(max-width:700px)").matches)select(document.getElementById("icon-fastlane"));
+})();
+</script>
+
+</html>
