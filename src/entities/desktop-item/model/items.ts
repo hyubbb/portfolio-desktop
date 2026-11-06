@@ -22,8 +22,15 @@ export const DESKTOP_ITEMS: DesktopItem[] = [
   },
   {
     id: "fastlane",
+    parent: "work",
     kind: "page",
     src: "/projects/fastlane.html",
+    color: "#155e75",
+    glyph: "lanes",
+    description: {
+      ko: "학원 앱 약 30개 배포를 1~2일 → 약 1시간, 사람이 하는 단계 7 → 2",
+      ja: "学習塾アプリ約 30 本のデプロイを 1〜2 日 → 約 1 時間、人の作業 7 → 2",
+    },
     name: "fastlane",
     title: { ko: "fastlane — 셸 스크립트 배포와 fastlane 배포", ja: "fastlane — シェルスクリプトと fastlane のデプロイ比較" },
     size: { width: 1180, height: 1100 },
@@ -33,7 +40,7 @@ export const DESKTOP_ITEMS: DesktopItem[] = [
     kind: "folder",
     name: { ko: "업무 개선", ja: "業務改善" },
     title: { ko: "업무 개선", ja: "業務改善" },
-    size: { width: 720, height: 430 },
+    size: { width: 940, height: 400 },
   },
   {
     id: "streaming",

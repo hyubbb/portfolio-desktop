@@ -1,3 +1,8 @@
 .readme-card{padding:22px 24px;display:flex;flex-direction:column;gap:10px;overflow:auto;-webkit-user-select:text;user-select:text}
 .readme-card h2{margin:0;font-size:20px}
 .readme-card p{margin:0;color:var(--win-muted);line-height:1.6;font-size:14px}
+.readme-card__contact{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:6px 0 0;padding-top:12px;border-top:1px solid var(--win-line);font-size:14px}
+.readme-card__contact dt{color:var(--win-muted);font-weight:600}
+.readme-card__contact dd{margin:0;font-variant-numeric:tabular-nums}
+.readme-card__contact a{color:var(--win-ink);text-decoration:none;border-bottom:1px solid var(--win-line)}
+.readme-card__contact a:hover{border-bottom-color:var(--win-ink)}

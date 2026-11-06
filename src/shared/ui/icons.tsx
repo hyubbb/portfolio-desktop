@@ -66,7 +66,7 @@ export function PageIcon() {
   );
 }
 
-export type ProjectGlyph = "chat" | "cup" | "grid" | "stream" | "pdf" | "upload" | "engine";
+export type ProjectGlyph = "chat" | "cup" | "grid" | "stream" | "pdf" | "upload" | "engine" | "lanes";
 
 function Glyph({ glyph, color }: { glyph: ProjectGlyph; color: string }) {
   if (glyph === "chat")
@@ -77,6 +77,13 @@ function Glyph({ glyph, color }: { glyph: ProjectGlyph; color: string }) {
         <path d="M25 25h14l-2 14a3 3 0 0 1-3 2.6h-4a3 3 0 0 1-3-2.6z" fill="#fff" />
         <path d="M27 30h10" stroke={color} strokeWidth="2" />
       </>
+    );
+  if (glyph === "lanes")
+    return (
+      <g stroke="#fff" strokeWidth="2.4" strokeLinecap="round" fill="none">
+        <path d="M23 28h11M21 33h13M23 38h11" />
+        <path d="M37 27l5 6-5 6" strokeLinejoin="round" />
+      </g>
     );
   if (glyph === "stream")
     return (
