@@ -1,0 +1,7 @@
+.folder-admin{display:flex;align-items:center;gap:6px;flex-wrap:wrap;min-width:0}
+.folder-admin span{font-size:12px;color:var(--red)}
+.folder-admin input{font:12.5px var(--f-ui);padding:3px 7px;border-radius:6px;border:1px solid var(--win-line);background:var(--win-bar);color:var(--win-ink);width:120px}
+.folder-admin button{font:600 12px var(--f-ui);padding:3px 9px;border-radius:6px;border:1px solid var(--win-line);background:var(--win);color:var(--win-ink);cursor:pointer}
+.folder-admin button.is-primary{background:var(--icon-sel);border-color:var(--icon-sel);color:#fff}
+.folder-admin button.is-danger{background:var(--red);border-color:var(--red);color:#fff}
+.folder-admin button:focus-visible,.folder-admin input:focus-visible{outline:2px solid var(--icon-sel);outline-offset:1px}

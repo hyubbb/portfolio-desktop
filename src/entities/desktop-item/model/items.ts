@@ -155,10 +155,3 @@ export const DESKTOP_ITEMS: DesktopItem[] = [
     size: { width: 1100, height: 760 },
   },
 ];
-
-const byId = new Map(DESKTOP_ITEMS.map((item) => [item.id, item]));
-
-export const getItem = (id: string) => byId.get(id);
-/** 바탕화면·독에 바로 놓이는 항목 (폴더 안 항목 제외) */
-export const getRootItems = () => DESKTOP_ITEMS.filter((item) => !item.parent);
-export const getChildren = (folderId: string) => DESKTOP_ITEMS.filter((item) => item.parent === folderId);

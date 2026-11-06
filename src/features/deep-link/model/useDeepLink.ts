@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { getItem } from "@/entities/desktop-item";
+import { getItem, useDesktopStore } from "@/entities/desktop-item";
 import { selectTopWindowId, useWindowStore } from "@/entities/window";
 import { readHash, writeHash } from "../lib/hash";
 
@@ -18,6 +18,10 @@ export function useDeepLink() {
   useEffect(() => {
     openFromHash();
     window.addEventListener("hashchange", openFromHash);
+    // 관리자가 만든 폴더는 저장된 구성을 불러온 뒤에야 찾을 수 있어 한 번 더 시도한다
+    const stopItems = useDesktopStore.subscribe((s, prev) => {
+      if (s.layout !== prev.layout) openFromHash();
+    });
     let last = selectTopWindowId(useWindowStore.getState());
     const unsubscribe = useWindowStore.subscribe((state) => {
       const top = selectTopWindowId(state);
@@ -29,6 +33,7 @@ export function useDeepLink() {
     return () => {
       window.removeEventListener("hashchange", openFromHash);
       unsubscribe();
+      stopItems();
     };
   }, []);
 }

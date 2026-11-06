@@ -1,4 +1,5 @@
 import { LanguageMenu } from "@/features/switch-language";
+import { AppMenu } from "./AppMenu";
 import { useLang, useT, translate } from "@/shared/i18n";
 import { useNow } from "@/shared/lib";
 import "./MenuBar.css";
@@ -26,10 +27,7 @@ export function MenuBar() {
   const t = useT();
   return (
     <header className="menu-bar">
-      <span className="menu-bar__brand">
-        <i aria-hidden="true" />
-        hyub
-      </span>
+      <AppMenu />
       <span className="menu-bar__right">
         <span className="menu-bar__who">{t("who")}</span>
         <LanguageMenu />

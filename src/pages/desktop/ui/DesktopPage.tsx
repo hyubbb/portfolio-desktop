@@ -1,6 +1,9 @@
 import { ProjectFrame, type DesktopItem } from "@/entities/desktop-item";
 import { ReadmeCard } from "@/entities/profile";
+import { useIsAdmin } from "@/entities/session";
 import { FolderView } from "@/features/browse-folder";
+import { FolderAdminBar } from "@/features/edit-desktop";
+import { ReadmeEditor } from "@/features/edit-readme";
 import { bindFrameShortcut, useCloseShortcut } from "@/features/close-window-shortcut";
 import { useDeepLink } from "@/features/deep-link";
 import { useLang, useLocalized } from "@/shared/i18n";
@@ -27,16 +30,18 @@ function InternalPage({ item }: { item: Extract<DesktopItem, { kind: "page" }> }
   );
 }
 
-function renderContent(item: DesktopItem) {
+/** 항목 종류별로 창 안에 그릴 내용. 편집 모드면 편집 도구를 함께 붙인다 */
+function WindowContent({ item }: { item: DesktopItem }) {
+  const isAdmin = useIsAdmin();
   switch (item.kind) {
     case "readme":
-      return <ReadmeCard />;
+      return isAdmin ? <ReadmeEditor /> : <ReadmeCard />;
     case "github":
       return <GithubBrowser user={item.user} />;
     case "page":
       return <InternalPage item={item} />;
     case "folder":
-      return <FolderView folder={item} />;
+      return <FolderView folder={item} toolbar={isAdmin ? <FolderAdminBar folder={item} /> : undefined} />;
     case "project":
       return <ProjectFrame item={item} />;
   }
@@ -50,7 +55,7 @@ export function DesktopPage() {
       <Wallpaper />
       <MenuBar />
       <Desktop />
-      <WindowLayer renderContent={renderContent} />
+      <WindowLayer renderContent={(item) => <WindowContent item={item} />} />
       <Dock />
     </>
   );

@@ -22,6 +22,7 @@ macOS 바탕화면을 그대로 옮겨 놓은 포트폴리오 사이트입니다
 | 다국어 | 한국어 / 일본어 사전, 사용자 선택을 localStorage에 기억, 정리 페이지까지 같은 언어로 |
 | 딥 링크 | 맨 앞 창이 바뀌면 주소의 `#해시`도 바뀌어, 지금 보는 화면을 그대로 공유 가능 |
 | 모바일 | 아이콘은 4열 홈 화면처럼 배치되고 탭 한 번으로 열림. 창은 메뉴 막대 아래를 꽉 채우는 앱 화면으로 열리며, 작은 신호등 대신 큰 "‹ 닫기" 버튼을 쓰고, 창이 열려 있는 동안 독을 숨김 |
+| 관리자 모드 | 왼쪽 위 **hyub** 메뉴 → 로그인하면 편집 모드. 새 폴더 만들기·이름 바꾸기·삭제, 아이콘을 끌어 폴더에 넣거나 빼기, README 바로 수정. 변경은 Supabase에 저장되어 방문자에게 바로 반영 |
 
 <br>
 
@@ -47,7 +48,7 @@ src/
 ├─ pages/
 │  └─ desktop/              # 위젯을 조립하고, 항목 종류별로 창 안에 무엇을 그릴지 결정
 ├─ widgets/
-│  ├─ menu-bar/             # 상단 메뉴 막대 (시계, 언어 메뉴)
+│  ├─ menu-bar/             # 상단 메뉴 막대 (hyub 메뉴, 시계, 언어 메뉴)
 │  ├─ desktop/              # 바탕화면 아이콘 열 + 드래그 선택 영역
 │  ├─ dock/                 # 하단 독 (실행 중 표시 점)
 │  ├─ window-layer/         # 열린 창들을 그리는 층
@@ -58,13 +59,18 @@ src/
 │  ├─ marquee-select/       # 드래그로 여러 아이콘 선택
 │  ├─ close-window-shortcut/# 키보드로 맨 앞 창 닫기
 │  ├─ browse-folder/        # 폴더 창 안에서 항목 열기
-│  └─ deep-link/            # #해시 ↔ 맨 앞 창 동기화
+│  ├─ deep-link/            # #해시 ↔ 맨 앞 창 동기화
+│  ├─ admin-login/          # 관리자 로그인 창
+│  ├─ edit-desktop/         # 새 폴더, 폴더 이름·삭제, 저장 상태
+│  └─ edit-readme/          # README 편집기
 ├─ entities/
 │  ├─ window/               # 창 상태 스토어, 배치 계산, 창 틀(WindowFrame)
 │  ├─ desktop-item/         # 바탕화면 항목 데이터·타입, 아이콘, 프로젝트 iframe
 │  ├─ github/               # GitHub API, 저장본, 저장소 정렬·집계
-│  └─ profile/              # README 카드
+│  ├─ profile/              # README 내용 스토어·카드
+│  └─ session/              # 관리자 로그인 상태
 └─ shared/
+   ├─ api/                  # Supabase 클라이언트, 내용 불러오기·저장
    ├─ i18n/                 # 사전, 번역 함수, 언어 스토어
    ├─ lib/                  # localStorage 래퍼, 뷰포트, 환경 판별, useNow
    └─ ui/                   # SVG 아이콘
@@ -88,6 +94,12 @@ src/
 `entities/desktop-item/model/items.ts`에 객체 하나를 넣으면 바탕화면 아이콘, 독, 창, `#해시` 바로가기가 함께 생깁니다.
 `parent: "lab"`을 주면 바탕화면 대신 실험실 폴더 안에 들어갑니다.
 
+### 4. 항목은 코드에, 배치는 데이터로 (관리자 모드)
+관리자가 바꾸는 것은 항목 자체가 아니라 **배치**(어느 폴더에 있는지, 폴더 이름, 새 폴더)뿐입니다.
+그래서 `items.ts`의 기본 항목 위에 Supabase에서 불러온 `DesktopLayout`을 덮어씌우는 방식(`applyLayout`)으로 만들었습니다.
+저장된 배치가 없거나 깨져도 기본 바탕화면이 그대로 나오고, 코드로 새 항목을 추가해도 배치 데이터와 충돌하지 않습니다.
+편집은 화면에 먼저 반영하고 400ms 뒤에 모아서 저장합니다. 쓰기 권한은 Supabase RLS에서 관리자 이메일로만 허용합니다.
+
 <br>
 
 ## 트러블슈팅
@@ -107,7 +119,7 @@ src/
 ## 테스트와 검사
 
 ```bash
-npm run test       # Vitest: 창 스토어, 창 배치, i18n, 저장소 정렬, 단축키 판별, 드래그 사각형 (19개)
+npm run test       # Vitest: 창 스토어, 창 배치, i18n, 저장소 정렬, 단축키 판별, 드래그 사각형, 바탕화면 배치 (25개)
 npm run typecheck  # TypeScript strict
 npm run lint:fsd   # Steiger: FSD 레이어·공개 API 규칙
 ```
@@ -124,4 +136,12 @@ npm install
 npm run dev        # http://localhost:5173
 npm run build      # dist/ 에 정적 파일 생성
 ```
+
+### 관리자 모드 설정 (Supabase)
+
+1. Supabase 프로젝트를 만들고 SQL Editor에서 `supabase/schema.sql` 실행 (관리자 이메일은 파일 안에서 수정)
+2. Authentication → Users에서 관리자 계정을 직접 추가하고, Sign In / Providers에서 새 가입을 막음
+3. `.env.example`을 참고해 `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`를 `.env`와 Vercel 환경 변수에 넣고 다시 배포
+
+환경 변수가 없으면 관리자 기능만 꺼지고, 사이트는 기본 바탕화면으로 그대로 동작합니다.
 

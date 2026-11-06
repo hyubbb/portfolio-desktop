@@ -1,0 +1,6 @@
+.save-status{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--icon-sel);color:#fff}
+.save-status i{width:6px;height:6px;border-radius:50%;background:#fff}
+.save-status.is-saving i{animation:save-pulse 1s infinite}
+.save-status.is-error{background:var(--red)}
+@keyframes save-pulse{50%{opacity:.3}}
+@media (prefers-reduced-motion:reduce){.save-status.is-saving i{animation:none}}

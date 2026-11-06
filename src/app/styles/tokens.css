@@ -4,7 +4,7 @@
   --win:#f6f6f8; --win-bar:#ececf0; --win-line:#d4d4da; --win-ink:#1d1e24; --win-muted:#6c6e78;
   --dock:rgba(255,255,255,.32); --dock-line:rgba(255,255,255,.45);
   --sel:rgba(40,110,230,.55); --menu-bg:rgba(246,246,250,.78); --menu-line:rgba(0,0,0,.12); --menu-hl:#2b6cf0;
-  --icon-sel:#2f6ce8; --marquee-bg:rgba(255,255,255,.13); --marquee-line:rgba(255,255,255,.6);
+  --icon-sel:#2f6ce8; --drop-bg:rgba(47,108,232,.08); --marquee-bg:rgba(255,255,255,.13); --marquee-line:rgba(255,255,255,.6);
   --red:#ff5f57; --yellow:#febc2e; --green:#28c840;
   --sky-a:#2a1f5c; --sky-b:#5b3b8c; --sky-c:#e0789a; --sky-d:#f6b27a;
   --f-ui:"IBM Plex Sans KR","Apple SD Gothic Neo",-apple-system,"Segoe UI",sans-serif;

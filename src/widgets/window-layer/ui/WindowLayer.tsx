@@ -1,6 +1,6 @@
-import type { ReactNode } from "react";
-import { getItem, OpenInNewTab, type DesktopItem } from "@/entities/desktop-item";
-import { useOpenWindowIds, WindowFrame } from "@/entities/window";
+import { useEffect, type ReactNode } from "react";
+import { OpenInNewTab, useDesktopStore, type DesktopItem } from "@/entities/desktop-item";
+import { useOpenWindowIds, useWindowStore, WindowFrame } from "@/entities/window";
 import { useLocalized } from "@/shared/i18n";
 
 interface WindowLayerProps {
@@ -11,11 +11,18 @@ interface WindowLayerProps {
 /** 열린 창들을 그린다. 쌓임 순서는 각 창의 z 값으로 정해진다. */
 export function WindowLayer({ renderContent }: WindowLayerProps) {
   const ids = useOpenWindowIds();
+  const items = useDesktopStore((s) => s.items);
   const localize = useLocalized();
+
+  // 지운 폴더처럼 항목이 사라지면 그 창도 닫는다
+  useEffect(() => {
+    for (const id of ids) if (!items.some((item) => item.id === id)) useWindowStore.getState().close(id);
+  }, [ids, items]);
+
   return (
     <>
       {ids.map((id) => {
-        const item = getItem(id);
+        const item = items.find((i) => i.id === id);
         if (!item) return null;
         return (
           <WindowFrame
